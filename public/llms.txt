@@ -1,0 +1,20 @@
+# WealthMaster India
+
+> Independent financial services and wealth advisory platform focused on Mutual Funds, SIPs, Retirement Planning, Insurance, PMS, AIF, NCDs and long-term wealth creation for Indian investors.
+
+WealthMaster India is led by Amit Chadha (Founder & Investment Advisor) and provides personalized SIP planning, goal-based portfolio construction, insurance review and alternate investments (PMS, AIF, NCDs) for retail investors and HNIs.
+
+## Pages
+
+- [Home](/): Build long-term wealth with confidence — overview of services.
+- [About](/about): Mission, principles, and team behind WealthMaster India.
+- [Explore Funds](/funds): Curated mutual funds across equity, debt, hybrid and ELSS categories.
+- [SIP Calculator](/calculator): Estimate the future value of monthly SIP investments.
+- [Get Started](/get-started): Request a personalized advisory consultation.
+- [Book Consultation](/book-consultation): Schedule an investment consultation with Amit Chadha.
+- [Contact](/contact): Call, email, WhatsApp or visit the New Delhi office.
+
+## Optional
+
+- [Login](/login): Investor login.
+- [Sign Up](/signup): Create an investor account.
