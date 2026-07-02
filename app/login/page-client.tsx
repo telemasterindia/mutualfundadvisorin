@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -17,14 +17,16 @@ const schema = z.object({
 
 function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
+  const redirectTo = sanitizeRedirectPath(searchParams.get("redirectTo"));
 
   useEffect(() => {
-    if (user) router.push("/dashboard");
-  }, [user, router]);
+    if (user) router.replace(redirectTo);
+  }, [redirectTo, user, router]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,13 +50,15 @@ function LoginPage() {
       return;
     }
     toast.success("Welcome back!");
-    router.push("/dashboard");
+    router.replace(redirectTo);
   };
 
   const onGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+      },
     });
     if (error) toast.error(error.message);
   };
@@ -130,4 +134,9 @@ function LoginPage() {
 
 export default function Page() {
   return <LoginPage />;
+}
+
+function sanitizeRedirectPath(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/dashboard";
+  return value;
 }

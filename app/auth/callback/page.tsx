@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import ClientPage from "./page-client";
 
 export const metadata: Metadata = {
-  title: "Login - WealthMaster India",
-  description: "Login to your WealthMaster India investment account.",
+  title: "Signing in - WealthMaster India",
   robots: { index: false, follow: false },
 };
 

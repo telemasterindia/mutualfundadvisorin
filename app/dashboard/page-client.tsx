@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -60,6 +61,7 @@ import {
   goals,
   sectorAllocation,
 } from "@/lib/mock-data";
+import type { AmfiFund } from "@/lib/amfi";
 
 const goalIcons = {
   retirement: Briefcase,
@@ -76,6 +78,49 @@ const topPerformers = [...holdings]
 const underPerformers = [...holdings].sort((a, b) => a.return1y - b.return1y).slice(0, 3);
 
 function Dashboard() {
+  const [freshFunds, setFreshFunds] = useState<AmfiFund[]>([]);
+  const [freshFundsLoading, setFreshFundsLoading] = useState(true);
+  const [freshFundsError, setFreshFundsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadFreshFunds() {
+      try {
+        const response = await fetch("/api/funds?limit=6", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("AMFI request failed");
+        }
+
+        const payload = (await response.json()) as {
+          funds?: AmfiFund[];
+          error?: string;
+        };
+
+        setFreshFunds(payload.funds ?? []);
+        setFreshFundsError(payload.error ?? null);
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setFreshFunds([]);
+          setFreshFundsError("Fresh AMFI NAV data is unavailable right now.");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setFreshFundsLoading(false);
+        }
+      }
+    }
+
+    loadFreshFunds();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen pb-20">
       <SiteHeader />
@@ -227,6 +272,41 @@ function Dashboard() {
             value={inr(portfolioStats.monthlySipTotal)}
             sub={`${sips.filter((s) => s.status === "Active").length} active SIPs`}
           />
+        </div>
+
+        <div className="mt-5">
+          <Card>
+            <CardHeader
+              title="Fresh AMFI NAV funds"
+              subtitle="Open-ended schemes updated within the last 7 days"
+              action={
+                <Link href="/funds" className="text-xs font-medium text-primary">
+                  Explore
+                </Link>
+              }
+            />
+            {freshFundsLoading ? (
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="h-28 animate-pulse rounded-2xl bg-secondary/60" />
+                ))}
+              </div>
+            ) : freshFundsError ? (
+              <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                {freshFundsError}
+              </div>
+            ) : freshFunds.length === 0 ? (
+              <div className="rounded-xl border bg-secondary/30 p-4 text-sm text-muted-foreground">
+                No fresh AMFI NAV rows passed the 7-day filter.
+              </div>
+            ) : (
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {freshFunds.map((fund) => (
+                  <FreshFundCard key={`${fund.schemeCode}-${fund.schemeName}`} fund={fund} />
+                ))}
+              </div>
+            )}
+          </Card>
         </div>
 
         {/* Health score, Riskometer, CAGR */}
@@ -825,6 +905,36 @@ function AmcLogo({ color, short, sm }: { color: string; short: string; sm?: bool
       style={{ background: color }}
     >
       {short}
+    </div>
+  );
+}
+
+function FreshFundCard({ fund }: { fund: AmfiFund }) {
+  return (
+    <div className="rounded-2xl border border-border/70 bg-secondary/30 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate text-[11px] uppercase tracking-wider text-muted-foreground">
+            {fund.fundHouse ?? "AMFI"}
+          </div>
+          <div className="mt-1 line-clamp-2 text-sm font-semibold leading-snug">
+            {fund.schemeName}
+          </div>
+        </div>
+        <div className="shrink-0 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+          Fresh
+        </div>
+      </div>
+      <div className="mt-3 flex items-end justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">NAV</div>
+          <div className="mt-0.5 font-display text-lg font-bold num">Rs. {fund.navText}</div>
+        </div>
+        <div className="text-right text-[11px] text-muted-foreground">
+          <div>{fund.date}</div>
+          <div className="mt-0.5 truncate">{fund.category ?? "Open ended"}</div>
+        </div>
+      </div>
     </div>
   );
 }
