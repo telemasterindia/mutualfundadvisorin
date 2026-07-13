@@ -102,6 +102,8 @@ function LoginPage() {
               id="password"
               name="password"
               type={show ? "text" : "password"}
+              autoComplete="current-password"
+              required
               placeholder="••••••••"
               className="flex h-11 w-full rounded-md border border-input bg-background pl-9 pr-10 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />

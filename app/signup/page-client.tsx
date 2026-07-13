@@ -19,8 +19,10 @@ const schema = z.object({
     .string()
     .min(8, "Min 8 characters")
     .max(72)
+    .regex(/[a-z]/, "Add a lowercase letter")
     .regex(/[A-Z]/, "Add an uppercase letter")
-    .regex(/[0-9]/, "Add a number"),
+    .regex(/[0-9]/, "Add a number")
+    .regex(/[^A-Za-z0-9]/, "Add a special character"),
 });
 
 function SignupPage() {
@@ -56,7 +58,11 @@ function SignupPage() {
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(
+        error.code === "weak_password"
+          ? "Use 8+ characters with uppercase, lowercase, a number and a special character. Avoid common or previously leaked passwords."
+          : error.message,
+      );
       return;
     }
     if (data.session) {
@@ -126,7 +132,9 @@ function SignupPage() {
               id="password"
               name="password"
               type={show ? "text" : "password"}
-              placeholder="At least 8 characters"
+              placeholder="Create a strong password"
+              autoComplete="new-password"
+              required
               className="flex h-11 w-full rounded-md border border-input bg-background pl-9 pr-10 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <button
@@ -140,7 +148,7 @@ function SignupPage() {
           </div>
           {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password}</p>}
           <p className="mt-1.5 text-[11px] text-muted-foreground">
-            8+ chars with an uppercase letter and a number
+            8+ characters with uppercase, lowercase, a number and a special character
           </p>
         </div>
 

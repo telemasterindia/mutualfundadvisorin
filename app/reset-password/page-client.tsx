@@ -11,8 +11,11 @@ const schema = z.object({
   password: z
     .string()
     .min(8, "Min 8 characters")
+    .max(72)
+    .regex(/[a-z]/, "Add a lowercase letter")
     .regex(/[A-Z]/, "Add an uppercase letter")
-    .regex(/[0-9]/, "Add a number"),
+    .regex(/[0-9]/, "Add a number")
+    .regex(/[^A-Za-z0-9]/, "Add a special character"),
 });
 
 function ResetPage() {
@@ -34,7 +37,11 @@ function ResetPage() {
     const { error: err } = await supabase.auth.updateUser({ password: parsed.data.password });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(
+        err.code === "weak_password"
+          ? "Use a less common password with uppercase, lowercase, a number and a special character."
+          : err.message,
+      );
       return;
     }
     toast.success("Password updated. Please sign in.");
@@ -56,7 +63,9 @@ function ResetPage() {
               id="password"
               name="password"
               type={show ? "text" : "password"}
-              placeholder="At least 8 characters"
+              placeholder="Create a strong password"
+              autoComplete="new-password"
+              required
               className="flex h-11 w-full rounded-md border border-input bg-background pl-9 pr-10 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <button
@@ -69,6 +78,9 @@ function ResetPage() {
             </button>
           </div>
           {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+          <p className="mt-1.5 text-[11px] text-muted-foreground">
+            8+ characters with uppercase, lowercase, a number and a special character
+          </p>
         </div>
         <PrimaryButton disabled={loading}>
           {loading ? "Updating…" : "Update password"}
