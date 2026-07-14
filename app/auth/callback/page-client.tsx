@@ -16,8 +16,7 @@ function AuthCallbackPage() {
     async function finishSignIn() {
       const next = sanitizeRedirectPath(searchParams.get("next"));
       const code = searchParams.get("code");
-      const oauthError =
-        searchParams.get("error_description") || searchParams.get("error") || null;
+      const oauthError = searchParams.get("error_description") || searchParams.get("error") || null;
 
       if (oauthError) {
         toast.error(oauthError);
@@ -54,7 +53,7 @@ function AuthCallbackPage() {
     <div className="grid min-h-screen place-items-center px-4">
       <div className="text-center">
         <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
-        <p className="mt-3 text-sm text-muted-foreground">Finishing Google sign-in...</p>
+        <p className="mt-3 text-sm text-muted-foreground">Finishing secure sign-in...</p>
       </div>
     </div>
   );

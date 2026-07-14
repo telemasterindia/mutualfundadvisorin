@@ -119,6 +119,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUSES = ["new", "contacted", "qualified", "converted", "lost"];
+const supabaseWrite = supabase as unknown as { from: (table: string) => any };
 
 function AdminCRM() {
   const [loading, setLoading] = useState(true);
@@ -148,11 +149,11 @@ function AdminCRM() {
         .order("created_at", { ascending: false })
         .limit(200),
     ]);
-    setLeads((l.data as Lead[]) ?? []);
-    setConsults((c.data as Consultation[]) ?? []);
-    setFollowUps((f.data as FollowUp[]) ?? []);
-    setMeetings((m.data as Meeting[]) ?? []);
-    setNotes((n.data as Note[]) ?? []);
+    setLeads((l.data as unknown as Lead[]) ?? []);
+    setConsults((c.data as unknown as Consultation[]) ?? []);
+    setFollowUps((f.data as unknown as FollowUp[]) ?? []);
+    setMeetings((m.data as unknown as Meeting[]) ?? []);
+    setNotes((n.data as unknown as Note[]) ?? []);
     setLoading(false);
   };
 
@@ -651,7 +652,7 @@ function AdminCRM() {
                                 variant="outline"
                                 className="rounded-full"
                                 onClick={async () => {
-                                  const { error } = await supabase
+                                  const { error } = await supabaseWrite
                                     .from("consultations")
                                     .update({ status: "confirmed" })
                                     .eq("id", c.id);
@@ -916,7 +917,7 @@ function StatusSelect({ lead, onChanged }: { lead: Lead; onChanged: () => void }
       value={lead.status}
       onValueChange={async (v) => {
         setBusy(true);
-        const { error } = await supabase.from("leads").update({ status: v }).eq("id", lead.id);
+        const { error } = await supabaseWrite.from("leads").update({ status: v }).eq("id", lead.id);
         setBusy(false);
         if (error) toast.error(error.message);
         else {
@@ -958,7 +959,7 @@ function FollowUpsPanel({
   const create = async () => {
     if (!leadId || !date) return toast.error("Select a lead and date");
     setBusy(true);
-    const { error } = await supabase
+    const { error } = await supabaseWrite
       .from("follow_ups")
       .insert({ lead_id: leadId, due_date: date, note: note || null });
     setBusy(false);
@@ -990,7 +991,7 @@ function FollowUpsPanel({
                 <div key={f.id} className="flex items-center gap-3 py-3">
                   <button
                     onClick={async () => {
-                      const { error } = await supabase
+                      const { error } = await supabaseWrite
                         .from("follow_ups")
                         .update({ completed: !f.completed })
                         .eq("id", f.id);
@@ -1100,7 +1101,7 @@ function LeadDrawer({
   const addNote = async () => {
     if (!note.trim()) return;
     setBusy(true);
-    const { error } = await supabase
+    const { error } = await supabaseWrite
       .from("investor_notes")
       .insert({ lead_id: lead.id, content: note });
     setBusy(false);
@@ -1114,7 +1115,7 @@ function LeadDrawer({
     if (!meetingDate) return toast.error("Pick a date");
     setBusy(true);
     const dt = new Date(`${meetingDate}T${meetingTime}:00`);
-    const { error } = await supabase.from("meetings").insert({
+    const { error } = await supabaseWrite.from("meetings").insert({
       lead_id: lead.id,
       title: `Advisory call with ${lead.full_name}`,
       scheduled_at: dt.toISOString(),

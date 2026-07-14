@@ -7,6 +7,7 @@ import { z } from "zod";
 import { AuthShell, Field, PrimaryButton, GoogleButton, Divider } from "@/components/auth-shell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/auth-redirect";
 import { useAuth } from "@/lib/use-auth";
 import { toast } from "sonner";
 
@@ -46,7 +47,11 @@ function LoginPage() {
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(
+        error.code === "email_not_confirmed"
+          ? "Please verify your email first, then sign in again."
+          : error.message,
+      );
       return;
     }
     toast.success("Welcome back!");
@@ -57,7 +62,7 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        redirectTo: getAuthCallbackUrl(redirectTo),
       },
     });
     if (error) toast.error(error.message);

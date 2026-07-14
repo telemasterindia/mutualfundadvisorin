@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "./providers";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wealthmasterindia.in";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in";
 
 export const metadata: Metadata = {
   title: "WealthMaster India - Wealth Advisory & Financial Planning",
@@ -15,18 +15,14 @@ export const metadata: Metadata = {
     title: "WealthMaster India - Wealth Advisory & Financial Planning",
     description:
       "Mutual Funds, SIPs, Insurance, PMS, AIF and Retirement Planning for Indian investors.",
-    images: [
-      "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c32a7cd5-faa0-4389-bf88-f4b1f1d8b9c7",
-    ],
+    images: ["/icon.svg"],
   },
   twitter: {
     card: "summary_large_image",
     title: "WealthMaster India - Wealth Advisory & Financial Planning",
     description:
       "Mutual Funds, SIPs, Insurance, PMS, AIF and Retirement Planning for Indian investors.",
-    images: [
-      "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c32a7cd5-faa0-4389-bf88-f4b1f1d8b9c7",
-    ],
+    images: ["/icon.svg"],
   },
 };
 

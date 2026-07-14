@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ClientPage from "./page-client";
 
 export const metadata: Metadata = {
-  title: "SIP Calculator - WealthMaster India",
+  title: "Financial Calculators - SIP, EMI, Retirement & Net Worth | WealthMaster India",
   description:
-    "Calculate SIP growth, future value, invested amount and estimated gains for long-term mutual fund planning.",
+    "Use SIP, Goal SIP, Lumpsum, EMI, Retirement and Net Worth calculators to plan investments, loans and financial goals.",
 };
 
 export default function Page() {

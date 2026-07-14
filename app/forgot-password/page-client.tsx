@@ -5,6 +5,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { AuthShell, Field, PrimaryButton } from "@/components/auth-shell";
 import { supabase } from "@/integrations/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/auth-redirect";
 
 const schema = z.object({ email: z.string().trim().email("Enter a valid email").max(255) });
 
@@ -24,7 +25,7 @@ function ForgotPage() {
     setError(undefined);
     setLoading(true);
     const { error: err } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: getAuthCallbackUrl("/reset-password"),
     });
     setLoading(false);
     if (err) {

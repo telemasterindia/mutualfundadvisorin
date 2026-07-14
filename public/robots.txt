@@ -5,4 +5,4 @@ Disallow: /portfolio
 Disallow: /admin
 Disallow: /onboarding
 
-Sitemap: https://wealthmasterindia.in/sitemap.xml
+Sitemap: https://www.mutualfundadvisor.in/sitemap.xml

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { AuthShell, Field, PrimaryButton, GoogleButton, Divider } from "@/components/auth-shell";
 import { supabase } from "@/integrations/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/auth-redirect";
 import { toast } from "sonner";
 
 const schema = z.object({
@@ -52,7 +53,7 @@ function SignupPage() {
       email: parsed.data.email,
       password: parsed.data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: getAuthCallbackUrl("/dashboard"),
         data: { full_name: parsed.data.name, phone: parsed.data.phone },
       },
     });
@@ -69,7 +70,12 @@ function SignupPage() {
       toast.success("Welcome to WealthMaster India!");
       router.push("/dashboard");
     } else {
-      toast.success("Check your email to confirm your account.");
+      await supabase.auth.resend({
+        type: "signup",
+        email: parsed.data.email,
+        options: { emailRedirectTo: getAuthCallbackUrl("/dashboard") },
+      });
+      toast.success("Check your email to verify your account, then sign in.");
     }
   };
 
@@ -77,7 +83,7 @@ function SignupPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard")}`,
+        redirectTo: getAuthCallbackUrl("/dashboard"),
       },
     });
     if (error) toast.error(error.message);
