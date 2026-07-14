@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -66,6 +66,21 @@ const leadSchema = z.object({
 
 function FinancialCalculators() {
   const [active, setActive] = useState<CalculatorId>("sip");
+
+  useEffect(() => {
+    const syncHash = () => {
+      const selectedTool = window.location.hash.replace("#", "");
+
+      if (calculators.some((calculator) => calculator.id === selectedTool)) {
+        setActive(selectedTool as CalculatorId);
+      }
+    };
+
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
 
   return (
     <div className="min-h-screen">
