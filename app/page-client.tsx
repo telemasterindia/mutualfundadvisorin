@@ -12,11 +12,12 @@ import {
   Plus,
   Minus,
   TrendingUp,
+  Newspaper,
   PieChart,
   Wallet,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -31,6 +32,7 @@ import {
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Button } from "@/components/ui/button";
 import { portfolioGrowth, allocation } from "@/lib/mock-data";
+import { fallbackDashboardData, type DashboardNewsItem } from "@/lib/advisor-data";
 
 const FAQS = [
   {
@@ -65,6 +67,7 @@ function Landing() {
       <Goals />
       <PortfolioPreview />
       <AIInsights />
+      <MarketNews />
       <Testimonials />
       <FAQ />
       <SiteFooter />
@@ -514,6 +517,108 @@ function InsightCard({ icon: Icon, title, body, tone }: any) {
         </div>
       </div>
     </div>
+  );
+}
+
+function MarketNews() {
+  const [marketNews, setMarketNews] = useState<DashboardNewsItem[]>(fallbackDashboardData.news);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadMarketNews() {
+      try {
+        const response = await fetch("/api/market-news", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error("Market news request failed");
+
+        const payload = (await response.json()) as {
+          news?: DashboardNewsItem[];
+        };
+
+        setMarketNews(payload.news?.length ? payload.news : fallbackDashboardData.news);
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setMarketNews(fallbackDashboardData.news);
+        }
+      }
+    }
+
+    loadMarketNews();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  return (
+    <Section eyebrow="Market updates" title="Fresh market news before investors sign in.">
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="glass rounded-3xl p-6 shadow-elegant lg:col-span-2">
+          <div className="flex items-start gap-4">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
+              <Newspaper className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-display text-2xl font-bold">What investors are watching</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                Live market headlines help first-time visitors see that WealthMaster India is
+                plugged into current Indian mutual fund, SIP and market developments.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-2">
+            {marketNews.slice(0, 4).map((item, index) => (
+              <a
+                key={`${item.source}-${item.title}-${index}`}
+                href={item.url ?? "/book-consultation"}
+                target={item.url ? "_blank" : undefined}
+                rel={item.url ? "noreferrer" : undefined}
+                className="group rounded-2xl border border-border/70 bg-secondary/30 p-4 transition hover:border-primary/40 hover:bg-secondary/50"
+              >
+                <div className="line-clamp-2 text-sm font-semibold leading-snug transition-colors group-hover:text-primary">
+                  {item.title}
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+                  <span>{item.source}</span>
+                  <span>{item.time}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass rounded-3xl p-6">
+          <div className="inline-flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+            <Sparkles className="h-3.5 w-3.5" />
+            Lead generation ready
+          </div>
+          <h3 className="mt-5 font-display text-2xl font-bold">
+            Turn market curiosity into a consultation.
+          </h3>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            Visitors can scan the news, test a free planning tool, and then request a personalized
+            call without needing a dashboard account first.
+          </p>
+          <div className="mt-6 flex flex-col gap-3">
+            <Link href="/calculator">
+              <Button className="w-full rounded-full gradient-bg text-primary-foreground shadow-glow">
+                Try free tools
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/book-consultation">
+              <Button variant="outline" className="w-full rounded-full">
+                Book a consultation
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </Section>
   );
 }
 

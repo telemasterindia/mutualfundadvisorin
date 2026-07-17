@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { cloneElement, isValidElement, useId, useState } from "react";
+import { cloneElement, isValidElement, useEffect, useId, useState } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
-import { CalendarDays, CheckCircle2, Clock, Loader2, Video, Phone, MapPin } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, Loader2, Video, Phone } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ const schema = z.object({
   preferred_date: z.string().min(1, "Pick a date"),
   preferred_time: z.string().min(1, "Pick a time"),
   topic: z.string().max(80).optional().or(z.literal("")),
-  mode: z.enum(["video", "phone", "in_person"]),
+  mode: z.enum(["video", "phone"]),
   message: z.string().max(800).optional().or(z.literal("")),
 });
 
@@ -47,6 +47,36 @@ const today = new Date();
 const minDate = today.toISOString().slice(0, 10);
 const maxDate = new Date(today.getTime() + 1000 * 60 * 60 * 24 * 60).toISOString().slice(0, 10);
 
+function getFundIntentContext() {
+  if (typeof window === "undefined") return null;
+
+  const params = new URLSearchParams(window.location.search);
+  const intent = params.get("intent");
+  const fund = params.get("fund");
+
+  if (!fund || (intent !== "invest" && intent !== "sip")) return null;
+
+  const code = params.get("code");
+  const nav = params.get("nav");
+  const fundHouse = params.get("house");
+  const category = params.get("category");
+  const label = intent === "sip" ? "Start SIP" : "Invest";
+  const topic = intent === "sip" ? "SIP setup" : "Portfolio review";
+  const details = [
+    `Intent: ${label}`,
+    `Fund: ${fund}`,
+    code ? `Scheme code: ${code}` : null,
+    nav ? `Latest NAV: Rs. ${nav}` : null,
+    fundHouse ? `Fund house: ${fundHouse}` : null,
+    category ? `Category: ${category}` : null,
+  ].filter(Boolean);
+
+  return {
+    topic,
+    message: `${details.join("\n")}\n\nPlease call me to discuss suitability and next steps.`,
+  };
+}
+
 function BookConsultation() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -58,9 +88,20 @@ function BookConsultation() {
     preferred_date: minDate,
     preferred_time: "",
     topic: "",
-    mode: "video" as "video" | "phone" | "in_person",
+    mode: "video" as "video" | "phone",
     message: "",
   });
+
+  useEffect(() => {
+    const context = getFundIntentContext();
+    if (!context) return;
+
+    setForm((current) => ({
+      ...current,
+      topic: current.topic || context.topic,
+      message: current.message || context.message,
+    }));
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +133,6 @@ function BookConsultation() {
   const modes = [
     { id: "video", label: "Video call", icon: Video, sub: "Google Meet" },
     { id: "phone", label: "Phone call", icon: Phone, sub: "We'll call you" },
-    { id: "in_person", label: "In person", icon: MapPin, sub: "Mumbai office" },
   ] as const;
 
   return (
@@ -146,7 +186,7 @@ function BookConsultation() {
                 <Label className="text-xs font-medium text-muted-foreground">
                   How would you like to meet?
                 </Label>
-                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
                   {modes.map((m) => {
                     const active = form.mode === m.id;
                     return (

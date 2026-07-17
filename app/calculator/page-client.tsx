@@ -16,14 +16,18 @@ import {
   YAxis,
 } from "recharts";
 import {
+  AlertTriangle,
   Banknote,
   CalendarClock,
   Calculator,
   CheckCircle2,
+  ExternalLink,
   Home,
+  Info,
   Loader2,
   PiggyBank,
   Send,
+  ShieldCheck,
   Target,
   TrendingUp,
   Wallet,
@@ -54,6 +58,21 @@ const calculators = [
 type CalculatorId = (typeof calculators)[number]["id"];
 type SummaryItem = [string, string, ("success" | "bold")?];
 
+const sebiReferences = [
+  {
+    label: "SEBI Investor Charter",
+    href: "https://investor.sebi.gov.in/Investor-charter.html",
+  },
+  {
+    label: "SEBI Investor Education",
+    href: "https://investor.sebi.gov.in/personalsecurities.html",
+  },
+  {
+    label: "SEBI Investor Helpline",
+    href: "https://investor.sebi.gov.in/",
+  },
+] as const;
+
 const leadSchema = z.object({
   name: z.string().trim().min(2, "Enter your name").max(80),
   email: z.string().trim().email("Enter a valid email").max(255),
@@ -83,20 +102,20 @@ function FinancialCalculators() {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-secondary/40 px-3 py-1 text-xs font-medium text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-primary">
               <Calculator className="h-3.5 w-3.5" /> Financial planning tools
             </div>
             <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl">
               Financial Calculators
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Estimate SIP growth, goal funding, loan EMI, retirement corpus and net worth. Use the
-              numbers as planning estimates, then speak with an advisor before making decisions.
+              Estimate SIP growth, goal funding, loan EMI, retirement corpus and net worth using
+              transparent formulas, stated assumptions and SEBI investor-awareness guardrails.
             </p>
           </div>
           <a href="#consultation">
@@ -104,6 +123,49 @@ function FinancialCalculators() {
               Get a custom plan
             </Button>
           </a>
+        </div>
+
+        <div className="mt-6 grid gap-3 lg:grid-cols-3">
+          <div className="rounded-2xl border border-primary/25 bg-card p-4 shadow-soft">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <ShieldCheck className="h-4 w-4" />
+              SEBI-aligned investor safety
+            </div>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              These tools are educational estimates, not assured returns or investment advice. Users
+              should understand risk, costs and suitability before investing.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-warning/35 bg-card p-4 shadow-soft">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              Mutual fund risk note
+            </div>
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              Expected return is only an assumption. Actual mutual fund returns depend on market
+              performance, scheme costs, taxes and holding period.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <Info className="h-4 w-4 text-primary" />
+              Official references
+            </div>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sebiReferences.map((reference) => (
+                <a
+                  key={reference.href}
+                  href={reference.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                >
+                  {reference.label}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
@@ -117,8 +179,8 @@ function FinancialCalculators() {
                 onClick={() => setActive(item.id)}
                 className={`flex h-14 items-center gap-3 rounded-2xl border px-4 text-left text-sm font-semibold transition ${
                   selected
-                    ? "border-primary bg-primary/10 text-primary shadow-glow"
-                    : "border-border/70 bg-secondary/30 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                    ? "border-primary bg-primary/10 text-primary shadow-soft"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -175,6 +237,11 @@ function SipCalculator() {
         ["Invested amount", inr(result.invested)],
         ["Estimated gains", inr(result.gains), "success"],
         ["Future value", inr(result.value), "bold"],
+      ]}
+      methodology={[
+        "Uses standard future value of an annuity-due formula for monthly SIP installments.",
+        "Assumes the selected annual return is compounded monthly and every SIP is made at the beginning of the month.",
+        "Does not include exit load, expense ratio, tax, missed installments or market volatility.",
       ]}
       chart={<GrowthChart data={result.data} />}
       context={`SIP: ${inr(monthly)} monthly for ${years} years at ${rate}% expected return. Estimated value ${inr(result.value)}.`}
@@ -236,6 +303,11 @@ function GoalSipCalculator() {
         ["Total invested", inr(result.invested)],
         ["Expected growth", inr(result.gains), "success"],
       ]}
+      methodology={[
+        "Discounts the target corpus using the same monthly SIP annuity-due formula in reverse.",
+        "Assumes a constant expected return and fixed monthly investment through the full period.",
+        "If the goal is essential, review inflation, risk tolerance and asset allocation before acting.",
+      ]}
       chart={<BreakupChart invested={result.invested} gains={result.gains} />}
       context={`Goal SIP: Target ${inr(target)} in ${years} years at ${rate}%. Required SIP ${inr(result.sip)}.`}
     >
@@ -288,6 +360,11 @@ function LumpsumCalculator() {
         ["Initial investment", inr(amount)],
         ["Estimated gains", inr(result.gains), "success"],
         ["Future value", inr(result.value), "bold"],
+      ]}
+      methodology={[
+        "Uses annual compound growth on a one-time investment amount.",
+        "Assumes the selected annual return remains constant for the full holding period.",
+        "Does not factor scheme expenses, taxes, exit load or actual NAV movement.",
       ]}
       chart={<BreakupChart invested={amount} gains={result.gains} />}
       context={`Lumpsum: ${inr(amount)} for ${years} years at ${rate}%. Estimated value ${inr(result.value)}.`}
@@ -348,6 +425,11 @@ function EmiCalculator() {
         ["Monthly EMI", inr(result.emi), "bold"],
         ["Total interest", inr(result.interest)],
         ["Total payment", inr(result.total), "success"],
+      ]}
+      methodology={[
+        "Uses the standard reducing-balance EMI formula with monthly compounding.",
+        "Assumes interest rate and tenure remain unchanged through the loan period.",
+        "Does not include processing fees, insurance, prepayment charges or floating-rate resets.",
       ]}
       chart={
         <BreakupChart
@@ -425,6 +507,11 @@ function RetirementCalculator() {
         ["Inflated monthly expense", inr(result.futureMonthlyExpense)],
         ["Required corpus", inr(result.corpus), "bold"],
         ["Required monthly SIP", inr(result.sip), "success"],
+      ]}
+      methodology={[
+        "Inflates current monthly expenses until retirement, then estimates a 25-year retirement corpus.",
+        "Corpus is calculated with real return: investment return adjusted for inflation.",
+        "Required SIP uses monthly compounding until retirement and should be reviewed with risk profiling.",
       ]}
       chart={
         <BarSummaryChart
@@ -514,6 +601,11 @@ function NetWorthCalculator() {
         ["Total liabilities", inr(result.totalLiabilities)],
         ["Net worth", inr(result.netWorth), "bold"],
       ]}
+      methodology={[
+        "Adds declared assets and subtracts declared liabilities to estimate net worth.",
+        "Property and investments should be updated using realistic current market values.",
+        "This is a snapshot only and does not assess liquidity, tax impact or risk concentration.",
+      ]}
       chart={
         <BreakupChart
           invested={result.totalAssets}
@@ -567,6 +659,7 @@ function CalculatorLayout({
   title,
   subtitle,
   summary,
+  methodology,
   chart,
   context,
   children,
@@ -574,23 +667,38 @@ function CalculatorLayout({
   title: string;
   subtitle: string;
   summary: SummaryItem[];
+  methodology: string[];
   chart: React.ReactNode;
   context: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="grid gap-6 lg:grid-cols-5">
-      <section className="glass rounded-3xl p-5 sm:p-6 lg:col-span-2">
+      <section className="rounded-3xl border border-border bg-card p-5 shadow-soft sm:p-6 lg:col-span-2">
         <h2 className="font-display text-2xl font-bold">{title}</h2>
         <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
         <div className="mt-6">{children}</div>
+        <div className="mt-6 rounded-2xl border border-border bg-secondary p-4">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <Info className="h-4 w-4 text-primary" />
+            Calculation basis
+          </div>
+          <ul className="mt-3 space-y-2 text-xs leading-5 text-muted-foreground">
+            {methodology.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <section className="space-y-6 lg:col-span-3">
-        <div className="glass rounded-3xl p-5 sm:p-6">
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-soft sm:p-6">
           <div className="grid gap-3 sm:grid-cols-3">
             {summary.map(([label, value, tone]) => (
-              <div key={label} className="rounded-2xl border border-border/70 bg-secondary/30 p-4">
+              <div key={label} className="rounded-2xl border border-border bg-secondary p-4">
                 <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
                   {label}
                 </div>
@@ -605,6 +713,11 @@ function CalculatorLayout({
             ))}
           </div>
           <div className="mt-6 h-72">{chart}</div>
+          <p className="mt-4 rounded-2xl border border-border bg-secondary p-3 text-xs leading-5 text-muted-foreground">
+            SEBI investor guidance emphasizes understanding risks, charges and suitability before
+            investing. This calculator is an educational planning aid and does not guarantee
+            returns.
+          </p>
         </div>
 
         <ConsultationLeadForm calculator={title} context={context} />
@@ -658,7 +771,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
     <form
       id="consultation"
       onSubmit={submit}
-      className="glass rounded-3xl p-5 sm:p-6"
+      className="rounded-3xl border border-border bg-card p-5 shadow-soft sm:p-6"
       aria-live="polite"
     >
       <div className="flex items-start gap-3">
@@ -678,7 +791,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
       </div>
 
       {sent ? (
-        <div className="mt-5 rounded-3xl border border-success/30 bg-success/10 p-5">
+        <div className="mt-5 rounded-3xl border border-success/30 bg-secondary p-5">
           <div className="flex items-start gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-success text-white">
               <CheckCircle2 className="h-5 w-5" />
@@ -693,7 +806,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
               </p>
             </div>
           </div>
-          <div className="mt-4 rounded-2xl border border-border/70 bg-background/60 p-4 text-sm text-muted-foreground">
+          <div className="mt-4 rounded-2xl border border-border bg-background p-4 text-sm text-muted-foreground">
             {context}
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
@@ -711,7 +824,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
         </div>
       ) : (
         <>
-          <div className="mt-5 rounded-2xl border border-border/70 bg-secondary/30 p-4 text-sm text-muted-foreground">
+          <div className="mt-5 rounded-2xl border border-border bg-secondary p-4 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Calculator snapshot:</span> {context}
           </div>
 
@@ -790,6 +903,19 @@ function Control({
   v: number;
   setV: (value: number) => void;
 }) {
+  const decimals = step < 1 ? 1 : 0;
+  const inputValue = Number.isInteger(v) ? v.toString() : v.toFixed(decimals);
+  const sanitize = (rawValue: string) => {
+    const next = Number(rawValue.replace(/[^\d.]/g, ""));
+
+    if (!Number.isFinite(next)) {
+      setV(min);
+      return;
+    }
+
+    setV(Math.min(max, Math.max(min, next)));
+  };
+
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between gap-3">
@@ -798,6 +924,16 @@ function Control({
           {value}
         </span>
       </div>
+      <Input
+        className="mt-3 h-10"
+        inputMode="decimal"
+        min={min}
+        max={max}
+        step={step}
+        value={inputValue}
+        onChange={(event) => sanitize(event.target.value)}
+        aria-label={`${label} exact value`}
+      />
       <Slider
         value={[v]}
         min={min}

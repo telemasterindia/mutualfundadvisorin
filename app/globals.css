@@ -120,24 +120,24 @@
 }
 
 .dark {
-  --background: oklch(0.135 0.02 255);
+  --background: oklch(0.105 0.012 255);
   --foreground: oklch(0.97 0.005 240);
 
-  --card: oklch(0.185 0.022 255);
+  --card: oklch(0.16 0.018 255);
   --card-foreground: oklch(0.97 0.005 240);
 
-  --popover: oklch(0.185 0.022 255);
+  --popover: oklch(0.145 0.018 255);
   --popover-foreground: oklch(0.97 0.005 240);
 
   --primary: oklch(0.78 0.18 152);
   --primary-foreground: oklch(0.135 0.02 255);
   --primary-glow: oklch(0.82 0.18 155);
 
-  --secondary: oklch(0.235 0.022 255);
+  --secondary: oklch(0.205 0.018 255);
   --secondary-foreground: oklch(0.97 0.005 240);
 
-  --muted: oklch(0.215 0.02 255);
-  --muted-foreground: oklch(0.7 0.015 245);
+  --muted: oklch(0.19 0.016 255);
+  --muted-foreground: oklch(0.79 0.012 245);
 
   --accent: oklch(0.28 0.06 152);
   --accent-foreground: oklch(0.92 0.05 152);
@@ -149,8 +149,8 @@
   --success-foreground: oklch(0.135 0.02 255);
   --warning: oklch(0.82 0.16 75);
 
-  --border: oklch(1 0 0 / 7%);
-  --input: oklch(1 0 0 / 10%);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 13%);
   --ring: oklch(0.78 0.18 152);
 
   --chart-1: oklch(0.78 0.18 152);
@@ -161,10 +161,9 @@
 
   --gradient-primary: linear-gradient(135deg, oklch(0.7 0.2 150), oklch(0.78 0.18 175));
   --gradient-hero:
-    radial-gradient(45% 60% at 80% 0%, oklch(0.5 0.18 152 / 0.22), transparent 70%),
-    radial-gradient(50% 60% at 10% 10%, oklch(0.45 0.15 215 / 0.18), transparent 70%),
-    linear-gradient(180deg, oklch(0.135 0.02 255), oklch(0.115 0.025 250));
-  --gradient-card: linear-gradient(180deg, oklch(1 0 0 / 0.05), oklch(1 0 0 / 0.02));
+    radial-gradient(55% 45% at 85% 0%, oklch(0.42 0.14 152 / 0.12), transparent 68%),
+    linear-gradient(180deg, oklch(0.105 0.012 255), oklch(0.095 0.014 250));
+  --gradient-card: linear-gradient(180deg, oklch(0.17 0.018 255 / 0.98), oklch(0.145 0.016 255 / 0.96));
 
   --shadow-elegant: 0 30px 60px -30px oklch(0 0 0 / 0.7);
   --shadow-soft: 0 1px 0 oklch(1 0 0 / 0.04) inset, 0 8px 24px -12px oklch(0 0 0 / 0.5);
@@ -216,14 +215,14 @@
     background: var(--gradient-card);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+    border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
     box-shadow: var(--shadow-soft);
   }
   .glass-strong {
-    background: color-mix(in oklab, var(--card) 80%, transparent);
+    background: color-mix(in oklab, var(--card) 96%, transparent);
     backdrop-filter: blur(28px) saturate(180%);
     -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+    border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
   }
   .glass-hover {
     transition: transform 400ms cubic-bezier(0.2,0.7,0.2,1), box-shadow 400ms ease, border-color 400ms ease;

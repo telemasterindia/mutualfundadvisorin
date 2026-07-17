@@ -1,18 +1,48 @@
 "use client";
+import { useEffect, useState } from "react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { RequireAuth } from "@/components/require-auth";
-import { funds } from "@/lib/mock-data";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/use-auth";
+import { fallbackDashboardData, loadAdvisorDashboardData } from "@/lib/advisor-data";
 
-const holdings = funds.slice(0, 6).map((f, i) => ({
-  ...f,
-  invested: [350000, 280000, 220000, 180000, 150000, 120000][i],
-  current: [462000, 380000, 268000, 240000, 175000, 138000][i],
-}));
+type PortfolioHolding = (typeof fallbackDashboardData.holdings)[number];
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 function Portfolio() {
+  const { user } = useAuth();
+  const [holdings, setHoldings] = useState<PortfolioHolding[]>(fallbackDashboardData.holdings);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setHoldings(fallbackDashboardData.holdings);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadHoldings() {
+      setLoading(true);
+      try {
+        const data = await loadAdvisorDashboardData(supabase, user!.id);
+        if (!cancelled) setHoldings(data.holdings);
+      } catch {
+        if (!cancelled) setHoldings(fallbackDashboardData.holdings);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadHoldings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
   const totalInvested = holdings.reduce((s, h) => s + h.invested, 0);
   const totalCurrent = holdings.reduce((s, h) => s + h.current, 0);
   const gain = totalCurrent - totalInvested;
@@ -24,7 +54,7 @@ function Portfolio() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="font-display text-3xl font-bold">Holdings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {holdings.length} funds across categories
+          {loading ? "Syncing Supabase holdings..." : `${holdings.length} funds across categories`}
         </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -52,8 +82,8 @@ function Portfolio() {
                   const plPct = ((pl / h.invested) * 100).toFixed(1);
                   const positive = pl > 0;
                   return (
-                    <tr key={h.id} className="hover:bg-secondary/40">
-                      <td className="px-3 py-4 font-medium">{h.name}</td>
+                    <tr key={`${h.fund}-${h.amc}`} className="hover:bg-secondary/40">
+                      <td className="px-3 py-4 font-medium">{h.fund}</td>
                       <td className="px-3 py-4 text-muted-foreground">{h.category}</td>
                       <td className="px-3 py-4 text-right">{inr(h.invested)}</td>
                       <td className="px-3 py-4 text-right font-semibold">{inr(h.current)}</td>

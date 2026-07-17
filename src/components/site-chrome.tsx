@@ -90,7 +90,7 @@ function ToolsMenu({ active }: { active: boolean }) {
       </Link>
 
       <div className="pointer-events-none absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 pt-3 opacity-0 transition duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
-        <div className="glass-strong rounded-3xl border border-border/70 p-3 shadow-elegant">
+        <div className="rounded-3xl border border-border bg-popover p-3 shadow-elegant">
           <div className="grid gap-1.5 sm:grid-cols-2">
             {toolLinks.map((tool) => {
               const Icon = tool.icon;
@@ -99,7 +99,7 @@ function ToolsMenu({ active }: { active: boolean }) {
                   key={tool.href}
                   href={tool.href}
                   prefetch={false}
-                  className="group/item flex items-start gap-3 rounded-2xl p-3 transition hover:bg-secondary/70"
+                  className="group/item flex items-start gap-3 rounded-2xl p-3 transition hover:bg-secondary"
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary transition group-hover/item:scale-105">
                     <Icon className="h-4 w-4" />
@@ -119,7 +119,7 @@ function ToolsMenu({ active }: { active: boolean }) {
           <Link
             href="/calculator"
             prefetch={false}
-            className="mt-2 flex items-center justify-between rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm font-semibold text-primary"
+            className="mt-2 flex items-center justify-between rounded-2xl border border-primary/25 bg-primary/10 px-4 py-3 text-sm font-semibold text-primary"
           >
             View all financial planning tools
             <ArrowRight className="h-4 w-4" />
@@ -154,7 +154,7 @@ export function SiteHeader() {
         className={`mx-auto rounded-2xl transition-all duration-500 ${
           scrolled
             ? "glass-strong border border-border/60 shadow-soft"
-            : "border border-transparent bg-background/40 backdrop-blur-md"
+            : "border border-border/60 bg-card/95 shadow-soft backdrop-blur-md"
         }`}
       >
         <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-5">

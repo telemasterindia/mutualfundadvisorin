@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Star } from "lucide-react";
+import { Search } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { funds } from "@/lib/mock-data";
 import type { AmfiFund } from "@/lib/amfi";
 
 const categories = [
@@ -77,38 +77,86 @@ const categoryDetails: Record<
   },
 };
 
+function consultationHref(fund: AmfiFund, intent: "invest" | "sip") {
+  const params = new URLSearchParams({
+    intent,
+    fund: fund.schemeName,
+    code: String(fund.schemeCode),
+    nav: fund.navText,
+  });
+
+  if (fund.fundHouse) params.set("house", fund.fundHouse);
+  if (fund.category) params.set("category", fund.category);
+
+  return `/book-consultation?${params.toString()}`;
+}
+
 function FundExplorer() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
+  const [defaultFunds, setDefaultFunds] = useState<AmfiFund[]>([]);
+  const [loadingDefaultFunds, setLoadingDefaultFunds] = useState(true);
   const [apiFunds, setApiFunds] = useState<AmfiFund[]>([]);
   const [loadingApiFunds, setLoadingApiFunds] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const hasLiveSearch = q.trim().length >= 2;
-
-  const list = useMemo(
-    () =>
-      funds.filter((f) => {
-        const matchQ = f.name.toLowerCase().includes(q.toLowerCase());
-        const matchC = cat === "All" || f.category === cat;
-        return matchQ && matchC;
-      }),
-    [q, cat],
-  );
   const selectedCategory = categoryDetails[cat] ?? categoryDetails.All;
-  const filteredApiFunds = useMemo(() => {
-    if (cat === "All") {
-      return apiFunds;
-    }
 
+  const filterByCategory = (funds: AmfiFund[]) => {
+    if (cat === "All") return funds;
     const keywords = selectedCategory.keywords;
 
-    return apiFunds.filter((fund) => {
+    return funds.filter((fund) => {
       const text = [fund.schemeName, fund.category, fund.fundHouse].filter(Boolean).join(" ");
       const normalizedText = text.toLowerCase();
 
       return keywords.some((keyword) => normalizedText.includes(keyword));
     });
-  }, [apiFunds, cat, selectedCategory.keywords]);
+  };
+
+  const filteredApiFunds = useMemo(
+    () => filterByCategory(apiFunds),
+    [apiFunds, cat, selectedCategory.keywords],
+  );
+  const filteredDefaultFunds = useMemo(
+    () => filterByCategory(defaultFunds),
+    [defaultFunds, cat, selectedCategory.keywords],
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadDefaultFunds() {
+      setLoadingDefaultFunds(true);
+      try {
+        const response = await fetch("/api/funds?limit=24", {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error("Default funds failed");
+
+        const payload = (await response.json()) as {
+          funds?: AmfiFund[];
+        };
+
+        setDefaultFunds(payload.funds ?? []);
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setDefaultFunds([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingDefaultFunds(false);
+        }
+      }
+    }
+
+    loadDefaultFunds();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   useEffect(() => {
     const query = q.trim();
@@ -211,7 +259,7 @@ function FundExplorer() {
             category={cat}
           />
         ) : (
-          <CuratedFundGrid funds={list} />
+          <CuratedFundGrid funds={filteredDefaultFunds} isLoading={loadingDefaultFunds} />
         )}
       </div>
       <SiteFooter />
@@ -279,13 +327,14 @@ function LiveSearchResults({
             </div>
             <div className="mt-4 flex gap-2">
               <Button
+                asChild
                 size="sm"
                 className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
               >
-                Invest
+                <Link href={consultationHref(fund, "invest")}>Invest</Link>
               </Button>
-              <Button size="sm" variant="outline" className="flex-1">
-                Start SIP
+              <Button asChild size="sm" variant="outline" className="flex-1">
+                <Link href={consultationHref(fund, "sip")}>Start SIP</Link>
               </Button>
             </div>
           </div>
@@ -295,56 +344,62 @@ function LiveSearchResults({
   );
 }
 
-function CuratedFundGrid({ funds: list }: { funds: typeof funds }) {
+function CuratedFundGrid({ funds, isLoading }: { funds: AmfiFund[]; isLoading: boolean }) {
+  if (isLoading) {
+    return (
+      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {[...Array(6)].map((_, index) => (
+          <div key={index} className="h-56 animate-pulse rounded-2xl bg-secondary/60" />
+        ))}
+      </div>
+    );
+  }
+
+  if (funds.length === 0) {
+    return (
+      <div className="mt-6 rounded-lg border bg-card p-4 text-sm text-muted-foreground">
+        Fresh AMFI data is unavailable right now. Try searching after a moment.
+      </div>
+    );
+  }
+
   return (
     <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {list.map((f) => (
+      {funds.map((fund) => (
         <div
-          key={f.id}
+          key={`${fund.schemeCode}-${fund.schemeName}`}
           className="glass rounded-2xl p-5 transition hover:-translate-y-1 hover:shadow-elegant"
         >
           <div className="flex items-start justify-between">
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                {f.category}
+                {fund.fundHouse ?? "Open-ended scheme"}
               </div>
-              <div className="mt-1 font-semibold">{f.name}</div>
+              <div className="mt-1 min-h-12 font-semibold">{fund.schemeName}</div>
             </div>
-            <div className="flex items-center gap-0.5 text-warning">
-              {[...Array(f.rating)].map((_, i) => (
-                <Star key={i} className="h-3.5 w-3.5 fill-current" />
-              ))}
+            <div className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+              Fresh NAV
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-            <Mini label="1Y" value={`${f.return1y}%`} positive />
-            <Mini label="3Y" value={`${f.return3y}%`} positive />
-            <Mini label="5Y" value={`${f.return5y}%`} positive />
+          <div className="mt-4 rounded-lg bg-secondary/60 p-3">
+            <div className="text-[10px] uppercase text-muted-foreground">Latest NAV</div>
+            <div className="mt-1 text-xl font-semibold">Rs. {fund.navText}</div>
+            <div className="mt-1 text-xs text-muted-foreground">As on {fund.date}</div>
           </div>
           <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-            <span>NAV Rs. {f.nav}</span>
-            <span>AUM {f.aum}</span>
-            <span
-              className={`rounded-full px-2 py-0.5 ${
-                f.risk === "Low"
-                  ? "bg-success/10 text-success"
-                  : f.risk === "Moderate"
-                    ? "bg-primary/10 text-primary"
-                    : "bg-destructive/10 text-destructive"
-              }`}
-            >
-              {f.risk}
-            </span>
+            <span>{fund.category ?? "Category unavailable"}</span>
+            <span>Code {fund.schemeCode}</span>
           </div>
           <div className="mt-4 flex gap-2">
             <Button
+              asChild
               size="sm"
               className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
             >
-              Invest
+              <Link href={consultationHref(fund, "invest")}>Invest</Link>
             </Button>
-            <Button size="sm" variant="outline" className="flex-1">
-              Start SIP
+            <Button asChild size="sm" variant="outline" className="flex-1">
+              <Link href={consultationHref(fund, "sip")}>Start SIP</Link>
             </Button>
           </div>
         </div>

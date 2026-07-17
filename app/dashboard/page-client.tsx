@@ -11,11 +11,9 @@ import {
   ChevronRight,
   IndianRupee,
   Activity,
-  Newspaper,
   Plus,
   Pause,
   Play,
-  Sparkles,
   Award,
   Target,
   Briefcase,
@@ -49,18 +47,13 @@ import { SiteHeader } from "@/components/site-chrome";
 import { RequireAuth } from "@/components/require-auth";
 import { Button } from "@/components/ui/button";
 import { ChartTooltip, inr, inrShort } from "@/components/chart-tooltip";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/use-auth";
 import {
-  investor,
-  portfolioStats,
-  portfolioGrowth,
-  allocation,
-  sips,
-  transactions,
-  news,
-  holdings,
-  goals,
-  sectorAllocation,
-} from "@/lib/mock-data";
+  fallbackDashboardData,
+  loadAdvisorDashboardData,
+  type AdvisorDashboardData,
+} from "@/lib/advisor-data";
 import type { AmfiFund } from "@/lib/amfi";
 
 const goalIcons = {
@@ -71,16 +64,57 @@ const goalIcons = {
   car: Plane,
 } as const;
 
-const topPerformers = [...holdings]
-  .filter((h) => h.return1y > 0)
-  .sort((a, b) => b.return1y - a.return1y)
-  .slice(0, 4);
-const underPerformers = [...holdings].sort((a, b) => a.return1y - b.return1y).slice(0, 3);
-
 function Dashboard() {
+  const { user } = useAuth();
+  const [dashboardData, setDashboardData] = useState<AdvisorDashboardData>(fallbackDashboardData);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
   const [freshFunds, setFreshFunds] = useState<AmfiFund[]>([]);
   const [freshFundsLoading, setFreshFundsLoading] = useState(true);
   const [freshFundsError, setFreshFundsError] = useState<string | null>(null);
+
+  const {
+    investor,
+    portfolioStats,
+    portfolioGrowth,
+    allocation,
+    sips,
+    transactions,
+    holdings,
+    goals,
+    sectorAllocation,
+  } = dashboardData;
+  const topPerformers = [...holdings]
+    .filter((h) => h.return1y > 0)
+    .sort((a, b) => b.return1y - a.return1y)
+    .slice(0, 4);
+  const underPerformers = [...holdings].sort((a, b) => a.return1y - b.return1y).slice(0, 3);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setDashboardData(fallbackDashboardData);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadDashboard() {
+      setDashboardLoading(true);
+      try {
+        const data = await loadAdvisorDashboardData(supabase, user!.id);
+        if (!cancelled) setDashboardData(data);
+      } catch {
+        if (!cancelled) setDashboardData(fallbackDashboardData);
+      } finally {
+        if (!cancelled) setDashboardLoading(false);
+      }
+    }
+
+    loadDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -144,6 +178,11 @@ function Dashboard() {
               <h1 className="font-display text-xl font-bold sm:text-2xl">
                 Your investor dashboard
               </h1>
+              {dashboardLoading && (
+                <div className="mt-1 text-[11px] text-muted-foreground">
+                  Syncing your Supabase portfolio data...
+                </div>
+              )}
             </div>
           </div>
           <div className="flex gap-2">
@@ -716,9 +755,9 @@ function Dashboard() {
           </Card>
         </div>
 
-        {/* Transactions + news */}
-        <div className="mt-5 grid gap-5 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
+        {/* Transactions */}
+        <div className="mt-5">
+          <Card>
             <CardHeader
               title="Recent SIP & transactions"
               subtitle="Last 30 days"
@@ -774,43 +813,6 @@ function Dashboard() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader
-              title={
-                (
-                  <span className="inline-flex items-center gap-2">
-                    <Newspaper className="h-4 w-4 text-primary" /> Market news
-                  </span>
-                ) as any
-              }
-              subtitle="Curated for you"
-            />
-            <div className="space-y-4">
-              {news.map((n, i) => (
-                <a key={i} href="#" className="group block">
-                  <div className="text-sm font-medium leading-snug transition-colors group-hover:text-primary">
-                    {n.title}
-                  </div>
-                  <div className="mt-1 text-[11px] text-muted-foreground">
-                    {n.source} · {n.time}
-                  </div>
-                </a>
-              ))}
-            </div>
-            <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-3">
-              <div className="flex items-start gap-2">
-                <Sparkles className="h-4 w-4 shrink-0 text-primary" />
-                <div className="text-xs">
-                  <div className="font-medium">AI advisor insight</div>
-                  <div className="mt-0.5 text-muted-foreground">
-                    Your equity allocation is well-aligned. Consider trimming sectoral tech exposure
-                    by 2–3%.
-                  </div>
-                </div>
-              </div>
             </div>
           </Card>
         </div>
