@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ClientPage from "./page-client";
+import { AuthProvider } from "@/lib/use-auth";
 
 export const metadata: Metadata = {
   title: "Onboarding - WealthMaster India",
@@ -8,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ClientPage />;
+  return (
+    <AuthProvider>
+      <ClientPage />
+    </AuthProvider>
+  );
 }

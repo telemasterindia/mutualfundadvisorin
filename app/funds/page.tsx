@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ClientPage from "./page-client";
 
 export const metadata: Metadata = {
-  title: "Explore Mutual Funds - WealthMaster India",
+  title: "Mutual Funds - Explore Categories and NAVs | WealthMaster India",
   description:
-    "Explore curated mutual funds across equity, debt, gold, sectoral, large cap, mid cap and flexi cap categories.",
+    "Explore mutual fund categories and fresh AMFI NAV information for educational comparison. Scheme listings are not recommendations.",
 };
 
 export default function Page() {

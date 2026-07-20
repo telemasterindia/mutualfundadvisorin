@@ -210,7 +210,7 @@ function FundExplorer() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="font-display text-3xl font-bold">Explore mutual funds</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Search fresh open-ended mutual fund NAVs from the official AMFI download.
@@ -261,7 +261,7 @@ function FundExplorer() {
         ) : (
           <CuratedFundGrid funds={filteredDefaultFunds} isLoading={loadingDefaultFunds} />
         )}
-      </div>
+      </main>
       <SiteFooter />
     </div>
   );
@@ -404,15 +404,6 @@ function CuratedFundGrid({ funds, isLoading }: { funds: AmfiFund[]; isLoading: b
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-function Mini({ label, value, positive }: { label: string; value: string; positive?: boolean }) {
-  return (
-    <div className="rounded-lg bg-secondary/60 p-2">
-      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
-      <div className={`text-sm font-semibold ${positive ? "text-success" : ""}`}>{value}</div>
     </div>
   );
 }

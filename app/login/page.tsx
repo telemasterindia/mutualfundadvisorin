@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import ClientPage from "./page-client";
+import { AuthProvider } from "@/lib/use-auth";
 
 export const metadata: Metadata = {
   title: "Login - WealthMaster India",
@@ -10,8 +11,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <Suspense fallback={null}>
-      <ClientPage />
-    </Suspense>
+    <AuthProvider>
+      <Suspense fallback={null}>
+        <ClientPage />
+      </Suspense>
+    </AuthProvider>
   );
 }

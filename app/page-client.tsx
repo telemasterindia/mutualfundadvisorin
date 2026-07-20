@@ -1,75 +1,81 @@
-"use client";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Sparkles,
-  Target,
-  ShieldCheck,
-  LineChart,
-  Brain,
-  Star,
-  Plus,
+  BookOpen,
+  Calculator,
+  CheckCircle2,
+  IndianRupee,
+  LockKeyhole,
+  MapPin,
   Minus,
-  TrendingUp,
-  Newspaper,
-  PieChart,
-  Wallet,
-  Zap,
+  Plus,
+  Scale,
+  ShieldCheck,
+  UserRound,
+  WalletCards,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-  PieChart as RPieChart,
-  Pie,
-  Cell,
-} from "recharts";
-import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { Button } from "@/components/ui/button";
-import { portfolioGrowth, allocation } from "@/lib/mock-data";
-import { fallbackDashboardData, type DashboardNewsItem } from "@/lib/advisor-data";
+import { CONTACT } from "@/lib/contact";
 
-const FAQS = [
+const articles = [
   {
-    q: "Is WealthMaster India regulated?",
-    a: "Yes. WealthMaster India is an Mutual Fund Distributor operating in compliance with SEBI guidelines. Your investments are held directly with the AMC and registrars (CAMS/KFintech) — we never hold your money.",
+    slug: "what-is-a-mutual-fund",
+    category: "Mutual fund basics",
+    title: "What Is a Mutual Fund and How Does It Work?",
+    description:
+      "Understand pooling, units, NAV, fund categories, costs and market risk in plain language.",
   },
   {
-    q: "How does WealthMaster India work?",
-    a: "We pair you with a dedicated mutual fund advisor who understands your goals, risk profile and life stage. Together we build a personalized SIP and wealth plan, then review and rebalance it with you over the long term.",
+    slug: "sip-vs-lump-sum",
+    category: "Ways to invest",
+    title: "SIP vs Lump Sum: Which Approach Should You Consider?",
+    description:
+      "Compare regular investing and one-time investing without treating either route as universally better.",
   },
   {
-    q: "Can I start with a small SIP?",
-    a: "Absolutely. Most of our recommended SIPs start at ₹500–₹1,000 a month. Your advisor will design a plan that grows with your income and goals — no lock-in (except ELSS).",
-  },
-  {
-    q: "How are returns calculated?",
-    a: "We use XIRR — the industry standard for irregular cashflows. It accounts for the timing of every SIP, lump sum, and redemption.",
-  },
-  {
-    q: "Is my data private?",
-    a: "Bank-grade encryption end-to-end. We never sell your data. You can export or delete your account anytime.",
+    slug: "direct-vs-regular-mutual-funds",
+    category: "Plan types",
+    title: "Direct vs Regular Mutual Funds: Understanding the Difference",
+    description:
+      "Learn how the two plans differ in distribution, expense ratios and the support available to investors.",
   },
 ];
 
-function Landing() {
+const faqs = [
+  {
+    q: "What happens during the free consultation?",
+    a: "We discuss your goals, time horizon, familiarity with mutual funds and questions. The conversation is educational and does not promise or guarantee returns.",
+  },
+  {
+    q: "Do mutual funds guarantee returns?",
+    a: "No. Mutual fund returns are market-linked and can rise or fall. Read all scheme-related documents and consider suitability before investing.",
+  },
+  {
+    q: "What is the difference between SIP and lump sum?",
+    a: "A SIP invests an amount at regular intervals, while a lump sum is invested at one time. The suitable route depends on cash flow, goals, time horizon and risk tolerance.",
+  },
+  {
+    q: "How is a Mutual Fund Distributor compensated?",
+    a: "Regular plans may pay a commission to the distributor from the scheme's expenses. The applicable commission disclosure will be shared transparently before you proceed.",
+  },
+  {
+    q: "Is the consultation private?",
+    a: "Information shared for the consultation is handled confidentially and used to respond to your request. Avoid sending passwords, OTPs or other account credentials.",
+  },
+];
+
+export default function Page() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
       <Hero />
-      <Stats />
-      <Benefits />
-      <Goals />
-      <PortfolioPreview />
-      <AIInsights />
-      <MarketNews />
-      <Testimonials />
+      <TrustStrip />
+      <Options />
+      <Learning />
+      <Expectations />
       <FAQ />
+      <FinalCTA />
       <SiteFooter />
     </div>
   );
@@ -83,180 +89,134 @@ function Hero() {
         className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-primary/15 blur-[140px]"
         aria-hidden
       />
-      <div className="mx-auto max-w-7xl px-4 pt-16 pb-20 sm:px-6 sm:pt-24 lg:px-8 lg:pt-28 lg:pb-32">
-        <div className="grid items-center gap-14 lg:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.2, 0.7, 0.2, 1] }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.05 }}
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-md ring-soft"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-pulse-glow rounded-full bg-primary" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-              </span>
-              Independent Wealth Advisory · Mutual Funds · SIPs · PMS · AIF
-            </motion.div>
-
-            <h1 className="mt-6 font-display text-[2.75rem] font-bold leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.5rem]">
-              Build Long-Term <span className="gradient-text">Wealth</span> with Confidence.
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">
+              Mutual fund education and distribution support
+            </div>
+            <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-6xl">
+              Understand mutual funds before you <span className="gradient-text">invest.</span>
             </h1>
-
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Mutual Funds, SIPs, Insurance, PMS, AIF and Wealth Planning Solutions for Indian
-              Investors — guided by Amit Chadha, Founder &amp; Investment Advisor at WealthMaster
-              India.
+            <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
+              Learn the basics, calculate your goals and explore your options—with guidance when you
+              need it.
             </p>
-
             <div className="mt-9 flex flex-wrap gap-3">
+              <Link href="/learn">
+                <Button size="lg" variant="outline" className="h-12 rounded-full px-6">
+                  Start learning
+                </Button>
+              </Link>
               <Link href="/book-consultation">
                 <Button
                   size="lg"
-                  className="group h-12 rounded-full px-6 gradient-bg text-primary-foreground shadow-glow hover:opacity-95"
+                  className="h-12 rounded-full px-6 gradient-bg text-primary-foreground shadow-glow"
                 >
-                  Speak with Amit Chadha
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <Link href="/calculator">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 rounded-full px-6 backdrop-blur"
-                >
-                  Try SIP calculator
+                  Book free consultation <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
-
-            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-border/60 pt-6 sm:gap-8">
-              <Trust label="Trusted by" value="2.4M+" sub="investors" />
-              <Trust label="AUM" value="₹18,400" sub="crore" />
-              <Trust label="Avg. XIRR" value="16.2%" sub="3-yr" />
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.2, 0.7, 0.2, 1] }}
-            className="relative"
-          >
-            <HeroCard />
-          </motion.div>
+            <p className="mt-5 max-w-xl text-xs text-muted-foreground">
+              Mutual fund investments are subject to market risks. Read all scheme-related documents
+              carefully.
+            </p>
+          </div>
+          <HeroVisual />
         </div>
       </div>
     </section>
   );
 }
 
-function Trust({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div>
-      <div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </div>
-      <div className="mt-1 font-display text-xl font-bold text-foreground num">{value}</div>
-      {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
-    </div>
-  );
-}
+function HeroVisual() {
+  const steps = [
+    { icon: BookOpen, label: "Learn the basics", done: true },
+    { icon: Calculator, label: "Calculate a goal", done: true },
+    { icon: WalletCards, label: "Compare options", done: false },
+    { icon: UserRound, label: "Speak with us", done: false },
+  ];
 
-function HeroCard() {
   return (
-    <div className="relative">
-      <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-primary/30 to-primary-glow/20 blur-3xl" />
-      <div className="glass rounded-3xl p-6 shadow-elegant animate-float">
-        <div className="flex items-start justify-between">
+    <div className="relative mx-auto w-full max-w-lg">
+      <div className="absolute -inset-8 -z-10 rounded-full bg-primary/20 blur-3xl" />
+      <div className="glass rounded-[2rem] p-5 shadow-elegant sm:p-7">
+        <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm text-muted-foreground">Total portfolio</div>
-            <div className="mt-1 font-display text-3xl font-bold">₹18,47,250</div>
-            <div className="mt-1 inline-flex items-center gap-1 text-sm text-success">
-              <TrendingUp className="h-3.5 w-3.5" /> +27.4% all-time • XIRR 18.6%
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">
+              Your learning path
             </div>
+            <div className="mt-1 font-display text-xl font-bold">Invest with understanding</div>
           </div>
-          <div className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
-            Live
+          <div className="grid h-11 w-11 place-items-center rounded-2xl gradient-bg text-primary-foreground shadow-glow">
+            <ShieldCheck className="h-5 w-5" />
           </div>
         </div>
-
-        <div className="mt-5 h-44">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={portfolioGrowth}>
-              <defs>
-                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="month" hide />
-              <YAxis hide domain={["dataMin - 50000", "dataMax + 50000"]} />
-              <Tooltip
-                contentStyle={{
-                  background: "var(--popover)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 12,
-                  fontSize: 12,
-                }}
-                formatter={(v: any) => `₹${(Number(v) / 100000).toFixed(2)}L`}
-              />
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="var(--primary)"
-                strokeWidth={2.5}
-                fill="url(#g1)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-          {allocation.slice(0, 3).map((a) => (
-            <div key={a.name} className="rounded-xl bg-secondary/60 p-3">
-              <div className="text-xs text-muted-foreground">{a.name}</div>
-              <div className="mt-0.5 text-sm font-semibold">{a.value}%</div>
+        <div className="mt-6 space-y-3">
+          {steps.map(({ icon: Icon, label, done }, index) => (
+            <div
+              key={label}
+              className={`flex items-center gap-4 rounded-2xl border p-4 ${done ? "border-primary/20 bg-primary/5" : "border-border/70 bg-secondary/30"}`}
+            >
+              <div
+                className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${done ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground"}`}
+              >
+                <Icon className="h-4 w-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Step {index + 1}
+                </div>
+                <div className="text-sm font-semibold">{label}</div>
+              </div>
+              {done && <CheckCircle2 className="h-5 w-5 text-primary" />}
             </div>
           ))}
         </div>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-secondary/50 p-4">
+            <IndianRupee className="h-4 w-4 text-primary" />
+            <div className="mt-2 text-xs text-muted-foreground">Planning tools</div>
+            <div className="text-lg font-bold">6 calculators</div>
+          </div>
+          <div className="rounded-2xl bg-secondary/50 p-4">
+            <BookOpen className="h-4 w-4 text-primary" />
+            <div className="mt-2 text-xs text-muted-foreground">Start here</div>
+            <div className="text-lg font-bold">3 guides</div>
+          </div>
+        </div>
       </div>
-
-      <div className="absolute -bottom-6 -left-6 hidden glass rounded-2xl p-4 shadow-soft md:block">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
-            <Zap className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="text-xs text-muted-foreground">SIP processed</div>
-            <div className="text-sm font-semibold">+ ₹10,000 Axis Bluechip</div>
-          </div>
+      <div className="absolute -bottom-5 -right-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-soft sm:-right-6">
+        <div className="flex items-center gap-2 text-xs font-semibold">
+          <LockKeyhole className="h-4 w-4 text-primary" /> Confidential consultation
         </div>
       </div>
     </div>
   );
 }
 
-function Stats() {
+function TrustStrip() {
   const items = [
-    { v: "5,000+", l: "Curated mutual funds" },
-    { v: "100%", l: "Personalized advisory" },
-    { v: "₹18,400 Cr", l: "Assets under advisory" },
-    { v: "4.8★", l: "Rated by investors" },
+    { icon: MapPin, title: "Physical office", body: CONTACT.address },
+    {
+      icon: LockKeyhole,
+      title: "Confidential conversation",
+      body: "Consultation information is handled privately.",
+    },
+    {
+      icon: Scale,
+      title: "Commission transparency",
+      body: "Regular-plan commission disclosures are shared before proceeding.",
+    },
   ];
   return (
-    <section className="border-y border-border/60 bg-secondary/40 backdrop-blur">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
-        {items.map((i) => (
-          <div key={i.l}>
-            <div className="font-display text-3xl font-bold tracking-tight num sm:text-4xl">
-              {i.v}
-            </div>
-            <div className="mt-1.5 text-sm text-muted-foreground">{i.l}</div>
+    <section className="border-y border-border/60 bg-secondary/30">
+      <div className="mx-auto grid max-w-5xl gap-4 px-4 py-7 sm:grid-cols-3 sm:px-6 lg:px-8">
+        {items.map(({ icon: Icon, title, body }) => (
+          <div key={title} className="rounded-2xl border border-border/60 bg-card/60 p-4">
+            <Icon className="h-5 w-5 text-primary" />
+            <div className="mt-3 text-sm font-semibold">{title}</div>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">{body}</p>
           </div>
         ))}
       </div>
@@ -264,424 +224,141 @@ function Stats() {
   );
 }
 
-function Benefits() {
-  const items = [
-    {
-      icon: LineChart,
-      title: "Power of compounding",
-      desc: "₹10,000 monthly at 15% becomes ₹2.3 Cr in 25 years.",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Disciplined investing",
-      desc: "Auto-debited SIPs remove emotion from market timing.",
-    },
-    {
-      icon: Wallet,
-      title: "Start with ₹500",
-      desc: "No minimum balance. Start small, scale as you grow.",
-    },
-    {
-      icon: Target,
-      title: "Tax-saving funds",
-      desc: "Save up to ₹46,800 a year under Section 80C with ELSS.",
-    },
-  ];
+function Options() {
   return (
-    <Section eyebrow="Long-term wealth creation" title="Disciplined SIPs. Generational wealth.">
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map((it) => (
-          <div
-            key={it.title}
-            className="glass rounded-2xl p-6 transition hover:-translate-y-1 hover:shadow-elegant"
-          >
-            <div className="grid h-11 w-11 place-items-center rounded-xl gradient-bg text-primary-foreground shadow-glow">
-              <it.icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-4 font-display text-lg font-semibold">{it.title}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{it.desc}</p>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Goals() {
-  const goals = [
-    { emoji: "🏡", title: "Buy a home", years: "10 yrs", monthly: "₹35,000" },
-    { emoji: "🎓", title: "Child's education", years: "15 yrs", monthly: "₹12,000" },
-    { emoji: "🏝️", title: "Early retirement", years: "20 yrs", monthly: "₹25,000" },
-    { emoji: "🚗", title: "Dream car", years: "5 yrs", monthly: "₹18,000" },
-  ];
-  return (
-    <Section eyebrow="Goal-based investing" title="Plans that match your life.">
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {goals.map((g) => (
-          <div key={g.title} className="glass rounded-2xl p-6">
-            <div className="text-3xl">{g.emoji}</div>
-            <h3 className="mt-3 font-display text-lg font-semibold">{g.title}</h3>
-            <div className="mt-4 flex items-end justify-between">
-              <div>
-                <div className="text-xs text-muted-foreground">Suggested SIP</div>
-                <div className="font-semibold">{g.monthly}/mo</div>
-              </div>
-              <div className="rounded-full bg-secondary px-3 py-1 text-xs">{g.years}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function PortfolioPreview() {
-  return (
-    <Section eyebrow="Portfolio tracking" title="Every rupee, beautifully visible.">
-      <div className="glass rounded-3xl p-6 md:p-10 shadow-elegant">
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="text-sm text-muted-foreground">Portfolio value</div>
-                <div className="font-display text-4xl font-bold">₹18,47,250</div>
-                <div className="text-sm text-success">+ ₹3,97,250 (+27.4%)</div>
-              </div>
-              <div className="flex gap-2">
-                {["1M", "6M", "1Y", "ALL"].map((t, i) => (
-                  <button
-                    key={t}
-                    className={`rounded-full px-3 py-1 text-xs ${i === 2 ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="mt-6 h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={portfolioGrowth}>
-                  <defs>
-                    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--muted-foreground)" stopOpacity={0.2} />
-                      <stop offset="100%" stopColor="var(--muted-foreground)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
-                  <YAxis
-                    stroke="var(--muted-foreground)"
-                    fontSize={12}
-                    tickFormatter={(v) => `${(v / 100000).toFixed(1)}L`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "var(--popover)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 12,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="invested"
-                    stroke="var(--muted-foreground)"
-                    strokeWidth={1.5}
-                    fill="url(#g3)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--primary)"
-                    strokeWidth={2.5}
-                    fill="url(#g2)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          <div>
-            <div className="text-sm text-muted-foreground">Asset allocation</div>
-            <div className="mt-2 h-56">
-              <ResponsiveContainer>
-                <RPieChart>
-                  <Pie
-                    data={allocation}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={3}
-                  >
-                    {allocation.map((a, i) => (
-                      <Cell key={i} fill={a.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: "var(--popover)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 12,
-                    }}
-                  />
-                </RPieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-2">
-              {allocation.map((a) => (
-                <div key={a.name} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: a.color }} />
-                    {a.name}
-                  </div>
-                  <span className="font-medium">{a.value}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-function AIInsights() {
-  return (
-    <Section eyebrow="Advisory + technology" title="Human guidance, smarter decisions.">
+    <Section eyebrow="Understand your options" title="Explore without sales pressure.">
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="glass rounded-3xl p-8">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl gradient-bg shadow-glow">
-            <Brain className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <h3 className="mt-5 font-display text-2xl font-bold">Advisor-led recommendations</h3>
-          <p className="mt-2 text-muted-foreground">
-            Your dedicated advisor combines deep research across 5,000+ schemes with smart analytics
-            to recommend funds that fit your goals — not what's trending.
+          <h3 className="font-display text-2xl font-bold">Mutual fund categories</h3>
+          <p className="mt-3 leading-7 text-muted-foreground">
+            Browse fresh AMFI NAV information and learn how equity, debt, hybrid and other
+            categories differ. A category or scheme is not a recommendation by itself.
           </p>
-          <ul className="mt-6 space-y-3 text-sm">
-            {[
-              "Risk-adjusted returns over 1, 3, 5 years",
-              "Expense ratio & category benchmark deltas",
-              "Fund manager tenure & consistency score",
-              "Personalized rebalancing nudges",
-            ].map((x) => (
-              <li key={x} className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary" /> {x}
-              </li>
-            ))}
-          </ul>
+          <Link href="/funds">
+            <Button className="mt-6 rounded-full" variant="outline">
+              Explore mutual funds <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
-        <div className="grid gap-4">
-          <InsightCard
-            icon={PieChart}
-            tone="success"
-            title="Your equity exposure is ideal"
-            body="62% equity is well-aligned with your aggressive 15-year horizon."
-          />
-          <InsightCard
-            icon={Target}
-            tone="warning"
-            title="Rebalance suggestion"
-            body="Debt allocation is 4% below target. Add ₹40,000 to SBI Magnum Gilt."
-          />
-          <InsightCard
-            icon={Sparkles}
-            tone="primary"
-            title="Tax-saving opportunity"
-            body="₹52,000 of 80C limit unused. Start an ELSS SIP before Mar 31."
-          />
+        <div className="glass rounded-3xl p-8">
+          <h3 className="font-display text-2xl font-bold">Planning calculators</h3>
+          <p className="mt-3 leading-7 text-muted-foreground">
+            Use SIP, goal, lump-sum, EMI, retirement and net-worth tools. Results are illustrations
+            based on your assumptions—not forecasts or guaranteed returns.
+          </p>
+          <Link href="/calculator">
+            <Button className="mt-6 rounded-full" variant="outline">
+              Open calculators <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </Section>
   );
 }
 
-function InsightCard({ icon: Icon, title, body, tone }: any) {
-  const toneCls =
-    tone === "success"
-      ? "bg-success/10 text-success"
-      : tone === "warning"
-        ? "bg-warning/15 text-warning"
-        : "bg-primary/10 text-primary";
+function Learning() {
   return (
-    <div className="glass rounded-2xl p-5">
-      <div className="flex items-start gap-4">
-        <div className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${toneCls}`}>
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <div className="font-semibold">{title}</div>
-          <div className="text-sm text-muted-foreground">{body}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MarketNews() {
-  const [marketNews, setMarketNews] = useState<DashboardNewsItem[]>(fallbackDashboardData.news);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadMarketNews() {
-      try {
-        const response = await fetch("/api/market-news", {
-          signal: controller.signal,
-        });
-
-        if (!response.ok) throw new Error("Market news request failed");
-
-        const payload = (await response.json()) as {
-          news?: DashboardNewsItem[];
-        };
-
-        setMarketNews(payload.news?.length ? payload.news : fallbackDashboardData.news);
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          setMarketNews(fallbackDashboardData.news);
-        }
-      }
-    }
-
-    loadMarketNews();
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  return (
-    <Section eyebrow="Market updates" title="Fresh market news before investors sign in.">
+    <Section eyebrow="Recommended reading" title="Start with the essentials.">
       <div className="grid gap-5 lg:grid-cols-3">
-        <div className="glass rounded-3xl p-6 shadow-elegant lg:col-span-2">
-          <div className="flex items-start gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
-              <Newspaper className="h-6 w-6" />
+        {articles.map((a) => (
+          <article key={a.slug} className="glass flex flex-col rounded-2xl p-6">
+            <div className="text-xs font-semibold uppercase tracking-wider text-primary">
+              {a.category}
             </div>
-            <div>
-              <h3 className="font-display text-2xl font-bold">What investors are watching</h3>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Live market headlines help first-time visitors see that WealthMaster India is
-                plugged into current Indian mutual fund, SIP and market developments.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {marketNews.slice(0, 4).map((item, index) => (
-              <a
-                key={`${item.source}-${item.title}-${index}`}
-                href={item.url ?? "/book-consultation"}
-                target={item.url ? "_blank" : undefined}
-                rel={item.url ? "noreferrer" : undefined}
-                className="group rounded-2xl border border-border/70 bg-secondary/30 p-4 transition hover:border-primary/40 hover:bg-secondary/50"
-              >
-                <div className="line-clamp-2 text-sm font-semibold leading-snug transition-colors group-hover:text-primary">
-                  {item.title}
-                </div>
-                <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
-                  <span>{item.source}</span>
-                  <span>{item.time}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="glass rounded-3xl p-6">
-          <div className="inline-flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-            <Sparkles className="h-3.5 w-3.5" />
-            Lead generation ready
-          </div>
-          <h3 className="mt-5 font-display text-2xl font-bold">
-            Turn market curiosity into a consultation.
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Visitors can scan the news, test a free planning tool, and then request a personalized
-            call without needing a dashboard account first.
-          </p>
-          <div className="mt-6 flex flex-col gap-3">
-            <Link href="/calculator">
-              <Button className="w-full rounded-full gradient-bg text-primary-foreground shadow-glow">
-                Try free tools
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+            <h3 className="mt-3 font-display text-xl font-bold">{a.title}</h3>
+            <p className="mt-3 flex-1 text-sm leading-6 text-muted-foreground">{a.description}</p>
+            <Link
+              href={`/learn/${a.slug}`}
+              className="mt-6 inline-flex items-center text-sm font-semibold text-primary"
+            >
+              Read article <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
-            <Link href="/book-consultation">
-              <Button variant="outline" className="w-full rounded-full">
-                Book a consultation
-              </Button>
-            </Link>
-          </div>
-        </div>
+          </article>
+        ))}
+      </div>
+      <div className="mt-8 text-center">
+        <Link href="/learn">
+          <Button size="lg" variant="outline" className="rounded-full">
+            View all learning resources
+          </Button>
+        </Link>
       </div>
     </Section>
   );
 }
 
-function Testimonials() {
+function Expectations() {
   const items = [
-    {
-      name: "Ananya Mehta",
-      role: "Product Manager, Bangalore",
-      body: "Cleanest portfolio dashboard I've used. The AI nudges actually helped me rebalance before the small-cap correction.",
-    },
-    {
-      name: "Rohan Kapoor",
-      role: "Founder, Mumbai",
-      body: "Started SIPs of ₹20k three years ago — XIRR of 22%. The goal planner makes investing feel intentional.",
-    },
-    {
-      name: "Pooja Iyer",
-      role: "Doctor, Pune",
-      body: "My advisor at WealthMaster India rebuilt my portfolio around real life goals. The hand-holding makes all the difference.",
-    },
+    [
+      "A conversation that starts with your questions",
+      "We first understand what you want to learn, your goals and your time horizon.",
+    ],
+    [
+      "Clear explanations",
+      "We explain common investment routes, categories, costs and risks in straightforward language.",
+    ],
+    [
+      "Transparent service commitments",
+      "We do not promise returns. Applicable regular-plan commission disclosures are shared before proceeding.",
+    ],
   ];
   return (
-    <Section eyebrow="Loved by investors" title="Trusted by India's long-term investors.">
+    <Section eyebrow="What you can expect from us" title="A transparent, education-first process.">
       <div className="grid gap-5 md:grid-cols-3">
-        {items.map((t) => (
-          <div key={t.name} className="glass rounded-2xl p-6">
-            <div className="flex gap-1 text-warning">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-current" />
-              ))}
-            </div>
-            <p className="mt-4 text-sm">{t.body}</p>
-            <div className="mt-5 border-t border-border pt-4">
-              <div className="text-sm font-semibold">{t.name}</div>
-              <div className="text-xs text-muted-foreground">{t.role}</div>
-            </div>
+        {items.map(([title, body]) => (
+          <div key={title} className="rounded-2xl border border-border bg-card p-6">
+            <CheckCircle2 className="h-6 w-6 text-primary" />
+            <h3 className="mt-4 font-display text-lg font-semibold">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
           </div>
         ))}
       </div>
+      <p className="mx-auto mt-8 max-w-3xl text-center text-sm text-muted-foreground">
+        Verified customer testimonials may be added later only with written permission and
+        appropriate substantiation.
+      </p>
     </Section>
   );
 }
 
 function FAQ() {
-  const faqs = FAQS;
-  const [open, setOpen] = useState<number | null>(0);
   return (
-    <Section eyebrow="FAQ" title="Everything you wanted to ask.">
+    <Section eyebrow="Frequently asked questions" title="Useful answers before you contact us.">
       <div className="mx-auto max-w-3xl space-y-3">
         {faqs.map((f, i) => (
-          <div key={i} className="glass rounded-2xl">
-            <button
-              onClick={() => setOpen(open === i ? null : i)}
-              className="flex w-full items-center justify-between p-5 text-left"
-            >
+          <details key={f.q} className="group glass rounded-2xl" open={i === 0}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-left [&::-webkit-details-marker]:hidden">
               <span className="font-medium">{f.q}</span>
-              {open === i ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            </button>
-            {open === i && <div className="px-5 pb-5 text-sm text-muted-foreground">{f.a}</div>}
-          </div>
+              <Plus className="h-4 w-4 shrink-0 group-open:hidden" />
+              <Minus className="hidden h-4 w-4 shrink-0 group-open:block" />
+            </summary>
+            <div className="px-5 pb-5 text-sm leading-6 text-muted-foreground">{f.a}</div>
+          </details>
         ))}
       </div>
     </Section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
+      <div className="rounded-3xl gradient-bg p-8 text-center text-primary-foreground sm:p-12">
+        <h2 className="font-display text-3xl font-bold">
+          Ready to discuss your mutual fund questions?
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm opacity-85">
+          Book a free, confidential consultation. No guaranteed-return claims and no obligation to
+          invest.
+        </p>
+        <Link href="/book-consultation">
+          <Button size="lg" variant="secondary" className="mt-7 rounded-full">
+            Book free consultation <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+    </section>
   );
 }
 
@@ -695,26 +372,14 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
-        className="mb-12 max-w-2xl"
-      >
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mb-10 max-w-2xl">
+        <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
           {eyebrow}
         </div>
-        <h2 className="mt-4 font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-4xl lg:text-[2.75rem]">
-          {title}
-        </h2>
-      </motion.div>
+        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
+      </div>
       {children}
     </section>
   );
-}
-
-export default function Page() {
-  return <Landing />;
 }

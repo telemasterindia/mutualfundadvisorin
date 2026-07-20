@@ -43,10 +43,6 @@ const topics = [
   "NRI investing",
 ];
 
-const today = new Date();
-const minDate = today.toISOString().slice(0, 10);
-const maxDate = new Date(today.getTime() + 1000 * 60 * 60 * 24 * 60).toISOString().slice(0, 10);
-
 function getFundIntentContext() {
   if (typeof window === "undefined") return null;
 
@@ -81,11 +77,12 @@ function BookConsultation() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dateBounds, setDateBounds] = useState({ min: "", max: "" });
   const [form, setForm] = useState({
     full_name: "",
     email: "",
     phone: "",
-    preferred_date: minDate,
+    preferred_date: "",
     preferred_time: "",
     topic: "",
     mode: "video" as "video" | "phone",
@@ -93,6 +90,16 @@ function BookConsultation() {
   });
 
   useEffect(() => {
+    const today = new Date();
+    const min = today.toISOString().slice(0, 10);
+    const max = new Date(today.getTime() + 1000 * 60 * 60 * 24 * 60).toISOString().slice(0, 10);
+
+    setDateBounds({ min, max });
+    setForm((current) => ({
+      ...current,
+      preferred_date: current.preferred_date || min,
+    }));
+
     const context = getFundIntentContext();
     if (!context) return;
 
@@ -247,8 +254,8 @@ function BookConsultation() {
                 <Field label="Preferred date" error={errors.preferred_date}>
                   <Input
                     type="date"
-                    min={minDate}
-                    max={maxDate}
+                    min={dateBounds.min || undefined}
+                    max={dateBounds.max || undefined}
                     value={form.preferred_date}
                     onChange={(e) => setForm({ ...form, preferred_date: e.target.value })}
                   />

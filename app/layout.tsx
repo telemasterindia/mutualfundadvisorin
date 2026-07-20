@@ -5,23 +5,23 @@ import { AppProviders } from "./providers";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in";
 
 export const metadata: Metadata = {
-  title: "WealthMaster India - Wealth Advisory & Financial Planning",
+  title: "WealthMaster India - Mutual Fund Education & Distribution Support",
   description:
-    "Independent wealth advisory for Indian investors - Mutual Funds, SIPs, Insurance, PMS, AIF, NCDs and Retirement Planning.",
+    "Learn about mutual funds, use transparent planning calculators and book a free consultation about the investment process.",
   metadataBase: new URL(SITE_URL),
   openGraph: {
     siteName: "WealthMaster India",
     type: "website",
-    title: "WealthMaster India - Wealth Advisory & Financial Planning",
+    title: "WealthMaster India - Mutual Fund Education & Distribution Support",
     description:
-      "Mutual Funds, SIPs, Insurance, PMS, AIF and Retirement Planning for Indian investors.",
+      "Mutual fund education, planning calculators and distribution support for Indian investors.",
     images: ["/icon.svg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WealthMaster India - Wealth Advisory & Financial Planning",
+    title: "WealthMaster India - Mutual Fund Education & Distribution Support",
     description:
-      "Mutual Funds, SIPs, Insurance, PMS, AIF and Retirement Planning for Indian investors.",
+      "Mutual fund education, planning calculators and distribution support for Indian investors.",
     images: ["/icon.svg"],
   },
 };
@@ -32,10 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@type": "FinancialService",
     name: "WealthMaster India",
     description:
-      "Independent financial services and wealth advisory platform focused on Mutual Funds, SIPs, Retirement Planning, Insurance, PMS, AIF, NCDs and long-term wealth creation for Indian investors.",
+      "Mutual fund education, planning tools and distribution support for Indian investors.",
     url: SITE_URL,
     areaServed: "IN",
-    serviceType: "Mutual Fund Distribution, Wealth Advisory, Insurance, PMS & AIF",
+    serviceType: "Mutual Fund Education and Distribution Support",
     telephone: "+91-9999252122",
     address: {
       "@type": "PostalAddress",
@@ -45,24 +45,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       postalCode: "110027",
       addressCountry: "IN",
     },
-    founder: { "@type": "Person", name: "Amit Chadha", jobTitle: "Founder & Investment Advisor" },
+    founder: { "@type": "Person", name: "Amit Chadha", jobTitle: "Founder" },
   };
+  const structuredDataJson = JSON.stringify(structuredData).replace(/</g, "\\u003c");
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap"
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      </head>
       <body>
+        <script
+          id="wealthmaster-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: structuredDataJson }}
+        />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

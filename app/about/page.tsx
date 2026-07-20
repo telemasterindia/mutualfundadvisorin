@@ -4,7 +4,7 @@ import ClientPage from "./page-client";
 export const metadata: Metadata = {
   title: "About WealthMaster India",
   description:
-    "Learn about WealthMaster India, an independent wealth advisory platform for Indian investors.",
+    "Learn how WealthMaster India supports mutual fund education, goal planning and investment assistance.",
 };
 
 export default function Page() {
