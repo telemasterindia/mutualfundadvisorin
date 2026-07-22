@@ -31,6 +31,10 @@ import {
   Target,
   TrendingUp,
   Wallet,
+  Bot,
+  BriefcaseBusiness,
+  Repeat2,
+  Percent,
 } from "lucide-react";
 import { z } from "zod";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
@@ -41,16 +45,27 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { PersonaGuide } from "@/components/persona-guide";
 
 const inr = (n: number) => `Rs. ${Math.round(n).toLocaleString("en-IN")}`;
 const pct = (n: number) => `${Number(n.toFixed(2))}%`;
 const clampFinite = (n: number) => (Number.isFinite(n) ? n : 0);
 
 const calculators = [
+  { id: "persona-advisor", label: "Persona Advisor", icon: Bot },
+  { id: "ppf", label: "PPF", icon: ShieldCheck },
+  { id: "hlv", label: "HLV", icon: BriefcaseBusiness },
   { id: "sip", label: "SIP", icon: TrendingUp },
+  { id: "mutual-fund", label: "Mutual Fund", icon: PiggyBank },
+  { id: "stp", label: "STP", icon: Repeat2 },
+  { id: "epf", label: "EPF", icon: Wallet },
   { id: "goal-sip", label: "Goal SIP", icon: Target },
   { id: "lumpsum", label: "Lumpsum", icon: PiggyBank },
   { id: "emi", label: "EMI", icon: Home },
+  { id: "home-loan", label: "Home Loan", icon: Home },
+  { id: "personal-loan", label: "Personal Loan", icon: Banknote },
+  { id: "car-loan", label: "Car Loan", icon: Calculator },
+  { id: "real-return", label: "Real Return", icon: Percent },
   { id: "retirement", label: "Retirement", icon: CalendarClock },
   { id: "net-worth", label: "Net Worth", icon: Wallet },
 ] as const;
@@ -168,7 +183,7 @@ function FinancialCalculators() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mt-8 grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {calculators.map((item) => {
             const Icon = item.icon;
             const selected = active === item.id;
@@ -191,10 +206,41 @@ function FinancialCalculators() {
         </div>
 
         <div className="mt-8">
+          {active === "persona-advisor" && <PersonaGuide />}
+          {active === "ppf" && <SavingsGrowthCalculator kind="ppf" />}
+          {active === "hlv" && <HlvCalculator />}
           {active === "sip" && <SipCalculator />}
+          {active === "mutual-fund" && <LumpsumCalculator title="Mutual Fund Calculator" />}
+          {active === "stp" && <StpCalculator />}
+          {active === "epf" && <SavingsGrowthCalculator kind="epf" />}
           {active === "goal-sip" && <GoalSipCalculator />}
           {active === "lumpsum" && <LumpsumCalculator />}
-          {active === "emi" && <EmiCalculator />}
+          {active === "emi" && <EmiCalculator title="EMI Calculator" />}
+          {active === "home-loan" && (
+            <EmiCalculator
+              title="Home Loan Calculator"
+              defaultPrincipal={5000000}
+              defaultYears={20}
+              defaultRate={8.5}
+            />
+          )}
+          {active === "personal-loan" && (
+            <EmiCalculator
+              title="Personal Loan Calculator"
+              defaultPrincipal={500000}
+              defaultYears={5}
+              defaultRate={12}
+            />
+          )}
+          {active === "car-loan" && (
+            <EmiCalculator
+              title="Car Loan Calculator"
+              defaultPrincipal={1000000}
+              defaultYears={7}
+              defaultRate={9}
+            />
+          )}
+          {active === "real-return" && <RealReturnCalculator />}
           {active === "retirement" && <RetirementCalculator />}
           {active === "net-worth" && <NetWorthCalculator />}
         </div>
@@ -342,7 +388,7 @@ function GoalSipCalculator() {
   );
 }
 
-function LumpsumCalculator() {
+function LumpsumCalculator({ title = "Lumpsum Calculator" }: { title?: string } = {}) {
   const [amount, setAmount] = useState(500000);
   const [years, setYears] = useState(10);
   const [rate, setRate] = useState(12);
@@ -354,7 +400,7 @@ function LumpsumCalculator() {
 
   return (
     <CalculatorLayout
-      title="Lumpsum Calculator"
+      title={title}
       subtitle="Estimate the future value of a one-time investment."
       summary={[
         ["Initial investment", inr(amount)],
@@ -400,10 +446,289 @@ function LumpsumCalculator() {
   );
 }
 
-function EmiCalculator() {
-  const [principal, setPrincipal] = useState(3000000);
-  const [years, setYears] = useState(20);
-  const [rate, setRate] = useState(8.5);
+function SavingsGrowthCalculator({ kind }: { kind: "ppf" | "epf" }) {
+  const isPpf = kind === "ppf";
+  const [contribution, setContribution] = useState(isPpf ? 150000 : 120000);
+  const [years, setYears] = useState(isPpf ? 15 : 25);
+  const [rate, setRate] = useState(isPpf ? 7.1 : 8.25);
+  const result = useMemo(() => {
+    const maturity =
+      contribution * ((Math.pow(1 + rate / 100, years) - 1) / (rate / 100)) * (1 + rate / 100);
+    return { invested: contribution * years, maturity };
+  }, [contribution, years, rate]);
+  const title = isPpf ? "PPF Calculator" : "EPF Calculator";
+  return (
+    <CalculatorLayout
+      title={title}
+      subtitle={`Estimate long-term ${isPpf ? "PPF" : "EPF"} accumulation using an assumed contribution and rate.`}
+      summary={[
+        ["Total contribution", inr(result.invested)],
+        ["Estimated growth", inr(result.maturity - result.invested)],
+        ["Estimated maturity", inr(result.maturity), "success"],
+      ]}
+      methodology={[
+        "Uses annual contributions and annual compounding for a planning illustration.",
+        "Actual credited rates, contribution timing, rules and tax treatment may change.",
+        "This estimate is not a government or employer account statement.",
+      ]}
+      chart={
+        <BreakupChart
+          invested={result.invested}
+          gains={result.maturity - result.invested}
+          investedLabel="Contribution"
+          gainsLabel="Growth"
+        />
+      }
+      context={`${title}: annual contribution ${inr(contribution)}, ${years} years, assumed rate ${rate}%.`}
+    >
+      <Control
+        label="Annual contribution"
+        value={inr(contribution)}
+        min={12000}
+        max={isPpf ? 150000 : 500000}
+        step={1000}
+        v={contribution}
+        setV={setContribution}
+      />
+      <Control
+        label="Investment period"
+        value={`${years} years`}
+        min={5}
+        max={40}
+        step={1}
+        v={years}
+        setV={setYears}
+      />
+      <Control
+        label="Assumed interest rate"
+        value={`${rate}% p.a.`}
+        min={4}
+        max={12}
+        step={0.05}
+        v={rate}
+        setV={setRate}
+      />
+    </CalculatorLayout>
+  );
+}
+
+function HlvCalculator() {
+  const [income, setIncome] = useState(1200000);
+  const [expenses, setExpenses] = useState(500000);
+  const [years, setYears] = useState(25);
+  const [liabilities, setLiabilities] = useState(2000000);
+  const value = Math.max(0, (income - expenses) * years + liabilities);
+  return (
+    <CalculatorLayout
+      title="Human Life Value Calculator"
+      subtitle="Estimate an indicative life-insurance requirement from income support and liabilities."
+      summary={[
+        ["Annual family contribution", inr(income - expenses)],
+        ["Outstanding liabilities", inr(liabilities)],
+        ["Indicative life cover", inr(value), "bold"],
+      ]}
+      methodology={[
+        "Uses a simplified income-replacement approach plus declared liabilities.",
+        "Does not account for every asset, dependant need, inflation or existing insurance policy.",
+        "Use this only as a starting estimate and review protection needs professionally.",
+      ]}
+      chart={
+        <BreakupChart
+          invested={Math.max(0, income - expenses) * years}
+          gains={liabilities}
+          investedLabel="Income replacement"
+          gainsLabel="Liabilities"
+        />
+      }
+      context={`HLV: income ${inr(income)}, personal expenses ${inr(expenses)}, support ${years} years, liabilities ${inr(liabilities)}.`}
+    >
+      <Control
+        label="Annual income"
+        value={inr(income)}
+        min={200000}
+        max={10000000}
+        step={50000}
+        v={income}
+        setV={setIncome}
+      />
+      <Control
+        label="Annual personal expenses"
+        value={inr(expenses)}
+        min={0}
+        max={5000000}
+        step={25000}
+        v={expenses}
+        setV={setExpenses}
+      />
+      <Control
+        label="Years of income support"
+        value={`${years} years`}
+        min={5}
+        max={40}
+        step={1}
+        v={years}
+        setV={setYears}
+      />
+      <Control
+        label="Outstanding liabilities"
+        value={inr(liabilities)}
+        min={0}
+        max={50000000}
+        step={100000}
+        v={liabilities}
+        setV={setLiabilities}
+      />
+    </CalculatorLayout>
+  );
+}
+
+function StpCalculator() {
+  const [initial, setInitial] = useState(1000000);
+  const [transfer, setTransfer] = useState(50000);
+  const [months, setMonths] = useState(12);
+  const transferred = Math.min(initial, transfer * months);
+  const remaining = Math.max(0, initial - transferred);
+  return (
+    <CalculatorLayout
+      title="STP Calculator"
+      subtitle="Plan periodic transfers from one mutual fund category to another."
+      summary={[
+        ["Total scheduled transfer", inr(transferred), "bold"],
+        ["Estimated source balance", inr(remaining)],
+        ["Number of transfers", `${Math.min(months, Math.ceil(initial / transfer))}`, "success"],
+      ]}
+      methodology={[
+        "Shows scheduled transfers without assuming returns in either source or destination scheme.",
+        "Actual balances vary with NAV movement, exit loads and taxes.",
+        "An STP does not remove market-timing or capital-loss risk.",
+      ]}
+      chart={
+        <BreakupChart
+          invested={transferred}
+          gains={remaining}
+          investedLabel="Transferred"
+          gainsLabel="Remaining"
+        />
+      }
+      context={`STP: initial ${inr(initial)}, transfer ${inr(transfer)} monthly for ${months} months.`}
+    >
+      <Control
+        label="Initial amount"
+        value={inr(initial)}
+        min={100000}
+        max={10000000}
+        step={50000}
+        v={initial}
+        setV={setInitial}
+      />
+      <Control
+        label="Monthly transfer"
+        value={inr(transfer)}
+        min={1000}
+        max={500000}
+        step={1000}
+        v={transfer}
+        setV={setTransfer}
+      />
+      <Control
+        label="Transfer period"
+        value={`${months} months`}
+        min={1}
+        max={60}
+        step={1}
+        v={months}
+        setV={setMonths}
+      />
+    </CalculatorLayout>
+  );
+}
+
+function RealReturnCalculator() {
+  const [amount, setAmount] = useState(1000000);
+  const [nominal, setNominal] = useState(10);
+  const [inflation, setInflation] = useState(6);
+  const [years, setYears] = useState(10);
+  const realRate = ((1 + nominal / 100) / (1 + inflation / 100) - 1) * 100;
+  const future = amount * Math.pow(1 + nominal / 100, years);
+  const todayValue = future / Math.pow(1 + inflation / 100, years);
+  return (
+    <CalculatorLayout
+      title="Real Return Calculator"
+      subtitle="See how inflation changes the purchasing power of an investment return."
+      summary={[
+        ["Nominal future value", inr(future)],
+        ["Inflation-adjusted value", inr(todayValue), "bold"],
+        ["Estimated real return", `${realRate.toFixed(2)}% p.a.`, "success"],
+      ]}
+      methodology={[
+        "Real return is calculated as (1 + nominal return) / (1 + inflation) − 1.",
+        "Both return and inflation inputs are assumptions and can differ materially in practice.",
+        "Taxes, costs and cash-flow timing are excluded.",
+      ]}
+      chart={
+        <BreakupChart
+          invested={todayValue}
+          gains={future - todayValue}
+          investedLabel="Real value"
+          gainsLabel="Inflation effect"
+        />
+      }
+      context={`Real return: ${inr(amount)}, nominal ${nominal}%, inflation ${inflation}%, ${years} years.`}
+    >
+      <Control
+        label="Starting investment"
+        value={inr(amount)}
+        min={10000}
+        max={10000000}
+        step={10000}
+        v={amount}
+        setV={setAmount}
+      />
+      <Control
+        label="Expected nominal return"
+        value={`${nominal}% p.a.`}
+        min={1}
+        max={25}
+        step={0.5}
+        v={nominal}
+        setV={setNominal}
+      />
+      <Control
+        label="Expected inflation"
+        value={`${inflation}% p.a.`}
+        min={1}
+        max={15}
+        step={0.5}
+        v={inflation}
+        setV={setInflation}
+      />
+      <Control
+        label="Period"
+        value={`${years} years`}
+        min={1}
+        max={40}
+        step={1}
+        v={years}
+        setV={setYears}
+      />
+    </CalculatorLayout>
+  );
+}
+
+function EmiCalculator({
+  title,
+  defaultPrincipal = 3000000,
+  defaultYears = 20,
+  defaultRate = 8.5,
+}: {
+  title: string;
+  defaultPrincipal?: number;
+  defaultYears?: number;
+  defaultRate?: number;
+}) {
+  const [principal, setPrincipal] = useState(defaultPrincipal);
+  const [years, setYears] = useState(defaultYears);
+  const [rate, setRate] = useState(defaultRate);
 
   const result = useMemo(() => {
     const monthlyRate = rate / 100 / 12;
@@ -419,7 +744,7 @@ function EmiCalculator() {
 
   return (
     <CalculatorLayout
-      title="EMI Calculator"
+      title={title}
       subtitle="Calculate monthly loan EMI and total interest outgo."
       summary={[
         ["Monthly EMI", inr(result.emi), "bold"],

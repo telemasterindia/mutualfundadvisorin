@@ -1,8 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /dashboard
-Disallow: /portfolio
-Disallow: /admin
-Disallow: /onboarding
+Disallow: /api/
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /forgot-password/
+Disallow: /login/
+Disallow: /onboarding/
+Disallow: /portfolio/
+Disallow: /reset-password/
+Disallow: /signup/
 
 Sitemap: https://www.mutualfundadvisor.in/sitemap.xml

@@ -69,13 +69,15 @@ export default function Page() {
   return (
     <div className="min-h-screen">
       <SiteHeader />
-      <Hero />
-      <TrustStrip />
-      <Options />
-      <Learning />
-      <Expectations />
-      <FAQ />
-      <FinalCTA />
+      <main>
+        <Hero />
+        <TrustStrip />
+        <Options />
+        <Learning />
+        <Expectations />
+        <FAQ />
+        <FinalCTA />
+      </main>
       <SiteFooter />
     </div>
   );

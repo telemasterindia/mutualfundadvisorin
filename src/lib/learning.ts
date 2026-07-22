@@ -152,6 +152,206 @@ export const learningArticles: LearningArticle[] = [
       },
     ],
   },
+  {
+    slug: "how-to-choose-a-mutual-fund",
+    title: "How to Choose a Mutual Fund for Your Goal",
+    description:
+      "A practical framework for narrowing schemes without chasing rankings or recent returns.",
+    category: "Choosing funds",
+    readingTime: "7 min read",
+    sections: [
+      {
+        heading: "Begin with the goal, not the fund",
+        paragraphs: [
+          "Define what the money is for, when it may be needed and how flexible that date is. A fund can only be considered suitable in relation to a goal and an investor's circumstances.",
+          "Money required soon generally has less time to recover from market falls. A longer horizon may allow more volatility, but it does not make an unsuitable scheme appropriate.",
+        ],
+      },
+      {
+        heading: "Select the asset category",
+        paragraphs: [
+          "Decide the broad mix of equity, debt and other assets before comparing individual schemes. Asset allocation usually has a larger influence on risk than choosing between two funds in the same category.",
+        ],
+        bullets: [
+          "Equity-oriented funds can suit long-term growth goals but may fall sharply.",
+          "Debt funds may reduce volatility but still carry credit and interest-rate risk.",
+          "Hybrid funds combine assets, with risk depending on their actual allocation.",
+        ],
+      },
+      {
+        heading: "Compare like with like",
+        paragraphs: [
+          "Compare schemes in the same category using consistent periods. Review the benchmark, portfolio, expense ratio, concentration, management approach and performance across rising and falling markets.",
+          "A five-star rating or top one-year return is not a complete selection method. Rankings change and can encourage buying after unusually strong performance.",
+        ],
+      },
+      {
+        heading: "Check the documents",
+        paragraphs: [
+          "Read the scheme objective, riskometer, portfolio disclosures and exit-load terms. Confirm that you understand where the scheme can invest and what could cause losses.",
+        ],
+      },
+      {
+        heading: "Keep the portfolio manageable",
+        paragraphs: [
+          "Owning several similar funds may create duplication rather than useful diversification. Choose only as many schemes as you can understand and review consistently.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "mutual-fund-riskometer-explained",
+    title: "The Mutual Fund Riskometer, Explained",
+    description:
+      "Learn what a scheme's risk label communicates, what can make it change and what it cannot tell you.",
+    category: "Understanding risk",
+    readingTime: "5 min read",
+    sections: [
+      {
+        heading: "What the Riskometer does",
+        paragraphs: [
+          "The Riskometer places a mutual fund scheme on a risk scale based on characteristics of its portfolio. It offers a quick starting point for comparing broad risk levels.",
+          "It is not a prediction of future return or a guarantee that losses will stay within a fixed limit.",
+        ],
+      },
+      {
+        heading: "Risk can change",
+        paragraphs: [
+          "A scheme's label can change when its holdings, market conditions or assessed risk characteristics change. Review current disclosures rather than relying on the label shown when you first invested.",
+        ],
+      },
+      {
+        heading: "Look beyond one label",
+        paragraphs: [
+          "Two schemes with the same broad risk label can behave differently. Consider their assets, concentration, credit quality, interest-rate sensitivity and historical drawdowns.",
+        ],
+        bullets: [
+          "Volatility: how widely values may move.",
+          "Credit risk: the possibility that an issuer may not repay as expected.",
+          "Liquidity risk: difficulty selling an investment at a reasonable price.",
+          "Concentration risk: heavy exposure to a few securities, sectors or themes.",
+        ],
+      },
+      {
+        heading: "Match risk with capacity",
+        paragraphs: [
+          "Risk tolerance is how comfortable you feel with losses; risk capacity is how much loss your financial plan can withstand. Both matter, and they are not always the same.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "expense-ratio-exit-load-and-tax",
+    title: "Expense Ratio, Exit Load and Tax: The Costs to Know",
+    description: "Understand the main costs that can affect a mutual fund investor's net outcome.",
+    category: "Costs and tax",
+    readingTime: "6 min read",
+    sections: [
+      {
+        heading: "Expense ratio",
+        paragraphs: [
+          "The expense ratio represents recurring scheme expenses and is reflected in NAV rather than billed separately. Even a small annual difference can matter over a long holding period.",
+          "Compare expenses within the same category and plan type. The cheapest scheme is not automatically the most suitable.",
+        ],
+      },
+      {
+        heading: "Exit load",
+        paragraphs: [
+          "Some schemes charge an exit load when units are redeemed within a specified period. The structure varies, so check the latest scheme terms before investing or redeeming.",
+        ],
+      },
+      {
+        heading: "Taxation",
+        paragraphs: [
+          "Tax treatment can depend on asset composition, holding period, transaction type and current law. Distributions and capital gains may be treated differently.",
+          "Tax rules change. Use current official guidance or consult a qualified tax professional for decisions involving your circumstances.",
+        ],
+      },
+      {
+        heading: "Focus on what you keep",
+        paragraphs: [
+          "Headline returns do not show the whole investor experience. Consider expenses, loads, taxes, timing and behaviour when estimating a realistic net outcome.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "asset-allocation-and-diversification",
+    title: "Asset Allocation and Diversification for Beginners",
+    description:
+      "See how spreading money across asset classes can shape portfolio risk and why more funds is not always better.",
+    category: "Portfolio basics",
+    readingTime: "6 min read",
+    sections: [
+      {
+        heading: "Two related ideas",
+        paragraphs: [
+          "Asset allocation is the division of money among categories such as equity, debt and cash. Diversification spreads exposure within and across those categories.",
+          "The aim is not to eliminate every loss, but to avoid allowing one investment or type of risk to determine the entire outcome.",
+        ],
+      },
+      {
+        heading: "Your allocation is personal",
+        paragraphs: [
+          "A suitable mix depends on the goal, time horizon, income stability, emergency reserves and capacity to accept a fall in value. Copying another investor's allocation can produce the wrong risk level.",
+        ],
+      },
+      {
+        heading: "Overlap can hide concentration",
+        paragraphs: [
+          "Several funds may own many of the same companies or bonds. The number of schemes is therefore a poor measure of diversification by itself.",
+        ],
+      },
+      {
+        heading: "Rebalancing",
+        paragraphs: [
+          "Market movements can push a portfolio away from its intended mix. Rebalancing periodically restores the target allocation by redirecting new investments or buying and selling assets.",
+          "Before selling, consider exit loads, taxes and whether the original plan or your circumstances have genuinely changed.",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "common-mutual-fund-mistakes",
+    title: "7 Common Mutual Fund Mistakes to Avoid",
+    description:
+      "Recognise return chasing, unnecessary switching, over-diversification and other habits that can weaken a plan.",
+    category: "Investor behaviour",
+    readingTime: "6 min read",
+    sections: [
+      {
+        heading: "Mistakes often look reasonable at first",
+        paragraphs: [
+          "Many poor outcomes come from repeatable behaviour rather than one obviously bad choice. A simple written plan can create discipline when markets become exciting or frightening.",
+        ],
+      },
+      {
+        heading: "Seven habits to watch",
+        paragraphs: ["Review your decisions for these common patterns:"],
+        bullets: [
+          "Choosing a fund only because it recently topped a return table.",
+          "Investing without linking the money to a goal and time horizon.",
+          "Treating a SIP as protection against all losses.",
+          "Owning many overlapping schemes in the name of diversification.",
+          "Stopping long-term investments during every market decline.",
+          "Switching frequently based on short performance periods.",
+          "Ignoring expenses, exit loads, taxes and liquidity needs.",
+        ],
+      },
+      {
+        heading: "Use a review process",
+        paragraphs: [
+          "Review at sensible intervals and focus on whether the goal, asset allocation or scheme fundamentals changed. Daily market movement alone rarely provides enough information for a long-term decision.",
+        ],
+      },
+      {
+        heading: "Know when to seek help",
+        paragraphs: [
+          "Consider qualified professional help when your needs involve several goals, taxation, irregular cash flows or risks you do not fully understand. Ask how the professional is registered and compensated.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getLearningArticle(slug: string) {

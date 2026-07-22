@@ -1,21 +1,46 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in";
-const entries = [
+import { learningArticles } from "@/lib/learning";
+
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in").replace(
+  /\/$/,
   "",
-  "about",
-  "funds",
-  "calculator",
-  "learn",
-  "learn/what-is-a-mutual-fund",
-  "learn/sip-vs-lump-sum",
-  "learn/direct-vs-regular-mutual-funds",
-  "book-consultation",
-  "contact",
-  "login",
-  "signup",
-  "get-started",
+);
+
+const pages = [
+  { path: "", changeFrequency: "weekly", priority: "1.0" },
+  { path: "funds", changeFrequency: "daily", priority: "0.9" },
+  { path: "calculator", changeFrequency: "monthly", priority: "0.8" },
+  { path: "learn", changeFrequency: "weekly", priority: "0.8" },
+  { path: "about", changeFrequency: "monthly", priority: "0.6" },
+  { path: "book-consultation", changeFrequency: "monthly", priority: "0.7" },
+  { path: "contact", changeFrequency: "monthly", priority: "0.6" },
+  { path: "get-started", changeFrequency: "monthly", priority: "0.7" },
+  ...learningArticles.map((article) => ({
+    path: `learn/${article.slug}`,
+    changeFrequency: "monthly",
+    priority: "0.7",
+  })),
 ];
 
 export function GET() {
-  const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.map((path) => `  <url><loc>${BASE_URL}/${path}</loc></url>`).join("\n")}\n</urlset>`;
-  return new Response(body, { headers: { "content-type": "application/xml" } });
+  const urls = pages
+    .map(
+      ({ path, changeFrequency, priority }) => `  <url>
+    <loc>${BASE_URL}${path ? `/${path}` : "/"}</loc>
+    <changefreq>${changeFrequency}</changefreq>
+    <priority>${priority}</priority>
+  </url>`,
+    )
+    .join("\n");
+
+  const body = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+  return new Response(body, {
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, max-age=0, s-maxage=86400, stale-while-revalidate=3600",
+    },
+  });
 }

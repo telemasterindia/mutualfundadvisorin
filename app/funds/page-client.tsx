@@ -326,15 +326,15 @@ function LiveSearchResults({
               {fund.category ?? "Category unavailable"}
             </div>
             <div className="mt-4 flex gap-2">
+              <Button asChild size="sm" variant="outline" className="flex-1">
+                <Link href={`/funds/${fund.schemeCode}`}>View history</Link>
+              </Button>
               <Button
                 asChild
                 size="sm"
                 className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
               >
                 <Link href={consultationHref(fund, "invest")}>Invest</Link>
-              </Button>
-              <Button asChild size="sm" variant="outline" className="flex-1">
-                <Link href={consultationHref(fund, "sip")}>Start SIP</Link>
               </Button>
             </div>
           </div>
@@ -391,15 +391,15 @@ function CuratedFundGrid({ funds, isLoading }: { funds: AmfiFund[]; isLoading: b
             <span>Code {fund.schemeCode}</span>
           </div>
           <div className="mt-4 flex gap-2">
+            <Button asChild size="sm" variant="outline" className="flex-1">
+              <Link href={`/funds/${fund.schemeCode}`}>View history</Link>
+            </Button>
             <Button
               asChild
               size="sm"
               className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
             >
               <Link href={consultationHref(fund, "invest")}>Invest</Link>
-            </Button>
-            <Button asChild size="sm" variant="outline" className="flex-1">
-              <Link href={consultationHref(fund, "sip")}>Start SIP</Link>
             </Button>
           </div>
         </div>

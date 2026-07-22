@@ -16,7 +16,10 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  distDir: process.env.NEXT_DIST_DIR ?? ".next",
+  // Keep webpack dev output separate from production/Turbopack output. On Windows,
+  // OneDrive can briefly lock generated route folders while syncing them, and a
+  // shared `.next` directory then causes EPERM unlink failures during recompiles.
+  distDir: process.env.NEXT_DIST_DIR ?? (isDevelopment ? ".next-dev" : ".next-build"),
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,

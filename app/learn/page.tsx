@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Calculator, Scale } from "lucide-react";
+import { ArrowRight, BookOpen, Calculator, Scale, ShieldCheck, WalletCards } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { Button } from "@/components/ui/button";
 import { learningArticles } from "@/lib/learning";
@@ -29,9 +29,10 @@ export default function LearnPage() {
               costs and risks. Educational content is not a recommendation or return forecast.
             </p>
           </div>
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {learningArticles.map((article, i) => {
-              const Icon = [BookOpen, Calculator, Scale][i];
+              const icons = [BookOpen, Calculator, Scale, ShieldCheck, WalletCards];
+              const Icon = icons[i % icons.length];
               return (
                 <article key={article.slug} className="glass flex flex-col rounded-3xl p-7">
                   <Icon className="h-7 w-7 text-primary" />

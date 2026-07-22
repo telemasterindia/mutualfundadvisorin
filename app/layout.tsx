@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "./providers";
+import { FloatingContact } from "@/components/floating-contact";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in";
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: structuredDataJson }}
         />
         <AppProviders>{children}</AppProviders>
+        <FloatingContact />
       </body>
     </html>
   );

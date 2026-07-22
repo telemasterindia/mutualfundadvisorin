@@ -913,7 +913,10 @@ function AmcLogo({ color, short, sm }: { color: string; short: string; sm?: bool
 
 function FreshFundCard({ fund }: { fund: AmfiFund }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-secondary/30 p-4">
+    <Link
+      href={`/funds/${fund.schemeCode}`}
+      className="block rounded-2xl border border-border/70 bg-secondary/30 p-4 transition hover:-translate-y-0.5 hover:border-primary/40"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="truncate text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -937,7 +940,8 @@ function FreshFundCard({ fund }: { fund: AmfiFund }) {
           <div className="mt-0.5 truncate">{fund.category ?? "Open ended"}</div>
         </div>
       </div>
-    </div>
+      <div className="mt-3 text-xs font-semibold text-primary">View NAV history →</div>
+    </Link>
   );
 }
 
