@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const isVercel = process.env.VERCEL === "1";
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
@@ -16,10 +17,11 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  // Keep webpack dev output separate from production/Turbopack output. On Windows,
-  // OneDrive can briefly lock generated route folders while syncing them, and a
-  // shared `.next` directory then causes EPERM unlink failures during recompiles.
-  distDir: process.env.NEXT_DIST_DIR ?? (isDevelopment ? ".next-dev" : ".next-build"),
+  // Vercel's Next.js runtime expects deployment manifests in `.next`. Locally,
+  // separate dev/build output avoids Windows OneDrive EPERM locks.
+  distDir:
+    process.env.NEXT_DIST_DIR ??
+    (isVercel ? ".next" : isDevelopment ? ".next-dev" : ".next-build"),
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
