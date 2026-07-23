@@ -9,7 +9,9 @@ import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -17,16 +19,62 @@ import {
 const DISCLAIMER =
   "Mutual fund investments are subject to market risk. This is general guidance based on the details you've shared, not personalized investment advice. Please consult with our advisor before investing.";
 
-const goals = [
-  ["wealth", "Wealth creation"],
-  ["retirement", "Retirement"],
-  ["education", "Child education"],
-  ["tax", "Tax saving"],
-  ["parking", "Short-term parking"],
-  ["home", "Buying a home"],
-  ["income", "Regular income from investments"],
-  ["general", "General savings, no fixed goal yet"],
-] as const;
+type GoalOption = readonly [value: string, label: string];
+type GoalGroup = { label: string; goals: readonly GoalOption[] };
+
+const goalGroups = [
+  {
+    label: "Big purchases & milestones",
+    goals: [
+      ["home", "Buying a home"],
+      ["home-renovation", "Home renovation"],
+      ["vehicle", "Buying a vehicle"],
+      ["marriage", "Marriage / wedding expenses"],
+    ],
+  },
+  {
+    label: "Education & growth",
+    goals: [
+      ["education", "Child's education"],
+      ["self-education", "Higher education / upskilling for yourself"],
+    ],
+  },
+  {
+    label: "Work & business",
+    goals: [["business", "Starting or growing a business"]],
+  },
+  {
+    label: "Life & security",
+    goals: [
+      ["parking", "Emergency fund / short-term parking"],
+      ["medical", "Medical / health expenses"],
+      ["vacation", "Vacation / travel"],
+      ["loan-repayment", "Loan repayment / prepayment"],
+    ],
+  },
+  {
+    label: "Long-term & income",
+    goals: [
+      ["wealth", "Wealth creation"],
+      ["retirement", "Retirement"],
+      ["income", "Regular income from investments"],
+      ["tax", "Tax saving"],
+      ["general", "General savings, no fixed goal yet"],
+    ],
+  },
+] as const satisfies readonly GoalGroup[];
+
+const goals = goalGroups.reduce<GoalOption[]>(
+  (allGoals, group) => [...allGoals, ...group.goals],
+  [],
+);
+const FIXED_DATE_GOALS = ["vehicle", "marriage", "home", "home-renovation"] as const;
+const fixedDatePersonas: Record<(typeof FIXED_DATE_GOALS)[number], string> = {
+  vehicle: "Vehicle Purchase Planner",
+  marriage: "Wedding Fund Planner",
+  home: "Home Purchase Planner",
+  "home-renovation": "Home Renovation Planner",
+};
 
 type Risk = "conservative" | "moderate" | "aggressive";
 type CapacityType = "monthly" | "lumpsum";
@@ -55,7 +103,7 @@ type Recommendation = {
   furtherReading?: { label: string; href: string };
 };
 
-function buildRecommendation(profile: Profile): Recommendation {
+function buildRecommendationLegacy(profile: Profile): Recommendation {
   const age = Number(profile.age);
   const years = Number(profile.horizon);
   const risk = profile.risk as Risk;
@@ -297,6 +345,181 @@ function buildRecommendation(profile: Profile): Recommendation {
   };
 }
 
+function buildRecommendation(profile: Profile): Recommendation {
+  const age = Number(profile.age);
+  const years = Number(profile.horizon);
+  const risk = profile.risk as Risk;
+  const goal = goals.find(([value]) => value === profile.goal)?.[1] ?? profile.goal;
+  const shortTerm = years <= 3 || profile.goal === "parking";
+  const nearRetirement = profile.goal === "retirement" && (age >= 50 || years <= 7);
+  const nriNote =
+    "Tax treatment and repatriation rules for NRIs differ and aren't covered here — confirm this with an advisor before investing.";
+
+  const addNriNote = (recommendation: Recommendation): Recommendation =>
+    profile.residency === "nri"
+      ? {
+          ...recommendation,
+          note: recommendation.note ? `${recommendation.note} ${nriNote}` : nriNote,
+        }
+      : recommendation;
+
+  const useExistingBranch = (overrides: Partial<Profile> = {}) =>
+    buildRecommendationLegacy({
+      ...profile,
+      residency: "resident",
+      existingInvestments: "",
+      ...overrides,
+    });
+
+  const recommendation = (() => {
+    if (profile.goal === "tax") {
+      return addNriNote(
+        useExistingBranch({
+          goal: "tax",
+          risk: "moderate",
+          horizon: String(Math.max(4, years)),
+          employmentType: "salaried",
+        }),
+      );
+    }
+
+    if (shortTerm) {
+      return addNriNote({
+        persona:
+          profile.goal === "parking" ? "Short-Term Capital Preserver" : "Near-Term Goal Protector",
+        categories: [
+          {
+            name: "Liquid funds",
+            why: `Designed for short holding periods and liquidity; they still carry market and credit risk.`,
+          },
+          {
+            name: "Ultra-short duration funds",
+            why: `May suit a ${years}-year horizon better than equity, subject to interest-rate and credit risk.`,
+          },
+        ],
+        calculator: {
+          label: profile.capacityType === "lumpsum" ? "Lumpsum calculator" : "Goal SIP calculator",
+          href: profile.capacityType === "lumpsum" ? "/calculator#lumpsum" : "/calculator#goal-sip",
+          reason: `Estimate whether your ${profile.capacityType === "monthly" ? "monthly contribution" : "available amount"} is aligned with your ${goal.toLowerCase()} timeline.`,
+        },
+      });
+    }
+
+    if (
+      FIXED_DATE_GOALS.includes(profile.goal as (typeof FIXED_DATE_GOALS)[number]) &&
+      years >= 4 &&
+      years < 7
+    ) {
+      const fixedGoal = profile.goal as (typeof FIXED_DATE_GOALS)[number];
+
+      return addNriNote({
+        persona: fixedDatePersonas[fixedGoal],
+        categories: [
+          {
+            name: "Large-cap equity funds",
+            why: "Can add measured growth potential through established companies, but equity values may still fall materially before the goal date.",
+          },
+          {
+            name: "Conservative hybrid funds",
+            why: "Lean toward debt with limited equity exposure for greater stability, while still carrying interest-rate, credit and market risk.",
+          },
+        ],
+        calculator: {
+          label: "Goal SIP calculator",
+          href: "/calculator#goal-sip",
+          reason: `Estimate the contribution needed for ${goal.toLowerCase()} over a fixed ${years}-year timeline using cautious assumptions.`,
+        },
+        note: `Because ${goal.toLowerCase()} has a fixed timeline of about ${years} years, we've weighted this toward capital protection rather than your stated risk appetite — a market dip right before you need the money would matter more here than the extra growth potential.`,
+      });
+    }
+
+    if (nearRetirement || risk === "conservative") {
+      const conservativeRecommendation = useExistingBranch({
+        employmentType: "salaried",
+        goal: profile.goal === "income" ? "general" : profile.goal,
+      });
+
+      if (profile.goal === "income") {
+        conservativeRecommendation.calculator.reason =
+          "Check the gap between your planned contribution and the amount needed for regular income from investments.";
+      }
+
+      return addNriNote(conservativeRecommendation);
+    }
+
+    if (profile.employmentType === "retired") {
+      return useExistingBranch({ employmentType: "retired", goal: "income" });
+    }
+
+    if (profile.goal === "income") {
+      return {
+        persona: "Passive Income Builder",
+        categories: [
+          {
+            name: "Conservative hybrid funds",
+            why: "Can support the gradual building of a supplementary income-oriented portfolio, but income and capital are not guaranteed.",
+          },
+          {
+            name: "Short-duration debt funds",
+            why: "May provide a relatively lower-volatility base for future income needs, while retaining interest-rate, liquidity and credit risk.",
+          },
+        ],
+        calculator: {
+          label: "Goal SIP calculator",
+          href: "/calculator#goal-sip",
+          reason:
+            "Estimate a regular contribution toward a future supplementary-income corpus using adjustable assumptions.",
+        },
+      };
+    }
+
+    if (profile.residency === "nri") {
+      return buildRecommendationLegacy({ ...profile, existingInvestments: "" });
+    }
+
+    if (risk === "aggressive" && years >= 7) {
+      return useExistingBranch();
+    }
+
+    if (risk === "aggressive" && years >= 4 && years < 7) {
+      return {
+        persona: "Growth-Focused Mid-Horizon Investor",
+        categories: [
+          {
+            name: "Large & mid-cap funds",
+            why: "Offer a mix of established and growing companies, but a four-to-six-year horizon can still experience significant volatility and capital loss.",
+          },
+          {
+            name: "Flexi-cap funds",
+            why: "Allow allocation across company sizes, while remaining fully exposed to equity-market declines over a relatively shorter growth horizon.",
+          },
+        ],
+        calculator: {
+          label: "Goal SIP calculator",
+          href: "/calculator#goal-sip",
+          reason: `Test whether regular contributions could support ${goal.toLowerCase()} over ${years} years using cautious return assumptions.`,
+        },
+      };
+    }
+
+    if (profile.employmentType === "self-employed") {
+      return useExistingBranch({ employmentType: "self-employed" });
+    }
+
+    return useExistingBranch();
+  })();
+
+  if (profile.existingInvestments !== "yes") return recommendation;
+
+  const overlapNote =
+    "Since you already invest in mutual funds, it's worth checking these categories against what you already hold to avoid unnecessary overlap.";
+
+  return {
+    ...recommendation,
+    note: recommendation.note ? `${recommendation.note} ${overlapNote}` : overlapNote,
+  };
+}
+
 export function PersonaGuide() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
@@ -420,10 +643,17 @@ export function PersonaGuide() {
                     <SelectValue placeholder="Choose your goal" />
                   </SelectTrigger>
                   <SelectContent>
-                    {goals.map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
+                    {goalGroups.map((group) => (
+                      <SelectGroup key={group.label}>
+                        <SelectLabel className="text-xs text-muted-foreground">
+                          {group.label}
+                        </SelectLabel>
+                        {group.goals.map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
                     ))}
                   </SelectContent>
                 </Select>

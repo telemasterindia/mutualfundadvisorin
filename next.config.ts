@@ -4,11 +4,12 @@ const isDevelopment = process.env.NODE_ENV === "development";
 const isVercel = process.env.VERCEL === "1";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://widgets.tradingview-widget.com https://s3.tradingview.com${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https:",
+  "connect-src 'self' https: wss://*.tradingview.com",
+  "frame-src 'self' https://s.tradingview.com https://www.tradingview.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -20,8 +21,7 @@ const nextConfig: NextConfig = {
   // Vercel's Next.js runtime expects deployment manifests in `.next`. Locally,
   // separate dev/build output avoids Windows OneDrive EPERM locks.
   distDir:
-    process.env.NEXT_DIST_DIR ??
-    (isVercel ? ".next" : isDevelopment ? ".next-dev" : ".next-build"),
+    process.env.NEXT_DIST_DIR ?? (isVercel ? ".next" : isDevelopment ? ".next-dev" : ".next-build"),
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,

@@ -20,6 +20,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
+import { MarketTicker } from "@/components/market-ticker";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -274,6 +275,7 @@ export function SiteHeader() {
             </div>
           </div>
         )}
+        <MarketTicker />
       </div>
     </header>
   );

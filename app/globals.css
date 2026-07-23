@@ -339,6 +339,25 @@
     opacity: 1;
   }
 }
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.market-ticker-track {
+  animation: ticker-scroll 22s linear infinite;
+}
+.market-ticker:hover .market-ticker-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .market-ticker-track {
+    animation: none;
+  }
+}
 .animate-fade-up {
   animation: fade-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
