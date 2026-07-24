@@ -32,6 +32,20 @@ type StockSearchResult = {
   exchange: string | null;
   type: string;
 };
+type MarketQuote = {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  currency: string;
+};
+type MarketNewsItem = {
+  title: string;
+  source: string;
+  time: string;
+  url?: string;
+};
 const ranges = ["1mo", "3mo", "6mo", "1y", "2y", "5y"];
 const formatNumber = (value: number | null, digits = 2) =>
   value === null ? "—" : new Intl.NumberFormat("en-IN", { maximumFractionDigits: digits }).format(value);
@@ -47,6 +61,8 @@ export default function StocksPage() {
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<StockSearchResult[]>([]);
+  const [marketQuotes, setMarketQuotes] = useState<MarketQuote[]>([]);
+  const [marketNews, setMarketNews] = useState<MarketNewsItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -78,6 +94,28 @@ export default function StocksPage() {
     void load();
     return () => controller.abort();
   }, [symbol, range]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    Promise.allSettled([
+      fetch("/api/stocks/market", { signal: controller.signal }).then(async (response) => {
+        if (!response.ok) throw new Error("Market snapshot unavailable");
+        return response.json() as Promise<{ quotes?: MarketQuote[] }>;
+      }),
+      fetch("/api/market-news", { signal: controller.signal }).then(async (response) => {
+        if (!response.ok) throw new Error("Market news unavailable");
+        return response.json() as Promise<{ news?: MarketNewsItem[] }>;
+      }),
+    ]).then(([quotesResult, newsResult]) => {
+      if (quotesResult.status === "fulfilled") {
+        setMarketQuotes(quotesResult.value.quotes ?? []);
+      }
+      if (newsResult.status === "fulfilled") {
+        setMarketNews(newsResult.value.news ?? []);
+      }
+    });
+    return () => controller.abort();
+  }, []);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -123,14 +161,226 @@ export default function StocksPage() {
 
   const positive = (overview?.change ?? 0) >= 0;
   const currency = overview?.currency ?? "INR";
+  const equityQuotes = marketQuotes.filter((quote) => !quote.symbol.startsWith("^"));
+  const advancing = equityQuotes.filter((quote) => quote.change >= 0).length;
+  const declining = equityQuotes.length - advancing;
+  const breadthPercent = equityQuotes.length ? (advancing / equityQuotes.length) * 100 : 50;
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <div className="text-sm font-semibold text-primary">Free market data</div>
-          <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Research any stock</h1>
+      <div className="border-b bg-slate-950 text-white">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                India markets
+              </div>
+              <h1 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                Markets today
+              </h1>
+              <p className="mt-2 max-w-xl text-sm text-slate-300">
+                Indices, market movers, breaking updates and stock research in one place.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 backdrop-blur">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                Market status
+              </div>
+              <div className="mt-1 flex items-center gap-2 text-sm font-semibold">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                Delayed market data
+              </div>
+            </div>
+          </div>
+          <div className="mt-7 flex gap-2 overflow-x-auto pb-1 text-sm">
+            {[
+              ["Overview", "#overview"],
+              ["Indices", "#indices"],
+              ["Market Movers", "#movers"],
+              ["Market News", "#news"],
+              ["Stock Search", "#stock-search"],
+            ].map(([item, href], index) => (
+              <a
+                key={item}
+                href={href}
+                className={`shrink-0 rounded-full px-4 py-2 font-medium ${
+                  index === 0 ? "bg-emerald-500 text-white" : "bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {marketQuotes.length > 0 && (
+          <section id="indices" className="mb-10 scroll-mt-28">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  Live market pulse
+                </div>
+                <h2 className="mt-1 font-display text-2xl font-bold">Benchmark indices</h2>
+              </div>
+              <div className="text-xs text-muted-foreground">Refreshes every 5 minutes</div>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {marketQuotes
+                .filter((quote) => quote.symbol.startsWith("^"))
+                .map((quote) => {
+                  const gain = quote.change >= 0;
+                  return (
+                    <div key={quote.symbol} className="relative overflow-hidden rounded-2xl border bg-card p-5 shadow-sm">
+                      <div className={`absolute inset-x-0 top-0 h-1 ${gain ? "bg-emerald-500" : "bg-rose-500"}`} />
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-semibold">{quote.name}</div>
+                        <span className="rounded-md bg-muted px-2 py-1 text-[10px] font-bold">{quote.symbol.replace("^", "")}</span>
+                      </div>
+                      <div className="mt-2 text-2xl font-bold num">{formatNumber(quote.price)}</div>
+                      <div className={`mt-1 text-sm font-semibold num ${gain ? "text-emerald-600" : "text-rose-500"}`}>
+                        {gain ? "+" : ""}{formatNumber(quote.change)} ({gain ? "+" : ""}{formatNumber(quote.changePercent)}%)
+                      </div>
+                    </div>
+                  );
+                })}
+              <div className="rounded-2xl border bg-card p-5 shadow-sm sm:col-span-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-semibold">Market breadth</div>
+                    <div className="text-xs text-muted-foreground">Popular NSE stocks</div>
+                  </div>
+                  <div className="text-right text-[11px]">
+                    <span className="font-semibold text-emerald-600">{advancing} advancing</span>
+                    <span className="mx-1 text-muted-foreground">/</span>
+                    <span className="font-semibold text-rose-500">{declining} declining</span>
+                  </div>
+                </div>
+                <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-rose-400">
+                  <div className="bg-emerald-500" style={{ width: `${breadthPercent}%` }} />
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2">
+                  {marketQuotes
+                    .filter((quote) => !quote.symbol.startsWith("^"))
+                    .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+                    .slice(0, 6)
+                    .map((quote) => (
+                      <button
+                        key={quote.symbol}
+                        type="button"
+                        onClick={() => selectStock({
+                          symbol: quote.symbol,
+                          name: quote.name,
+                          exchange: "NSE",
+                          type: "Equity",
+                        })}
+                        className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-muted"
+                      >
+                        <span className="truncate text-xs font-semibold">{quote.symbol.replace(".NS", "")}</span>
+                        <span className={`text-xs font-semibold num ${quote.change >= 0 ? "text-emerald-600" : "text-rose-500"}`}>
+                          {quote.change >= 0 ? "+" : ""}{formatNumber(quote.changePercent)}%
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+        {(marketQuotes.length > 0 || marketNews.length > 0) && (
+          <section id="overview" className="mb-12 grid scroll-mt-28 gap-5 lg:grid-cols-3">
+            <div id="movers" className="scroll-mt-28 rounded-3xl border bg-card p-5 shadow-sm lg:col-span-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+                    Share market
+                  </div>
+                  <h2 className="mt-1 text-xl font-bold">Market movers</h2>
+                </div>
+                <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+                  NSE watchlist
+                </span>
+              </div>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                {[
+                  {
+                    title: "Top gainers",
+                    quotes: marketQuotes
+                      .filter((quote) => !quote.symbol.startsWith("^") && quote.change >= 0)
+                      .sort((a, b) => b.changePercent - a.changePercent)
+                      .slice(0, 5),
+                    color: "text-emerald-600",
+                  },
+                  {
+                    title: "Top losers",
+                    quotes: marketQuotes
+                      .filter((quote) => !quote.symbol.startsWith("^") && quote.change < 0)
+                      .sort((a, b) => a.changePercent - b.changePercent)
+                      .slice(0, 5),
+                    color: "text-rose-500",
+                  },
+                ].map((group) => (
+                  <div key={group.title}>
+                    <div className="border-b pb-2 text-sm font-semibold">{group.title}</div>
+                    <div className="divide-y">
+                      {group.quotes.length ? group.quotes.map((quote) => (
+                        <button
+                          key={quote.symbol}
+                          type="button"
+                          onClick={() => selectStock({
+                            symbol: quote.symbol,
+                            name: quote.name,
+                            exchange: "NSE",
+                            type: "Equity",
+                          })}
+                          className="flex w-full items-center justify-between gap-3 py-3 text-left hover:text-primary"
+                        >
+                          <span>
+                            <span className="block text-sm font-semibold">{quote.symbol.replace(".NS", "")}</span>
+                            <span className="text-xs text-muted-foreground">₹{formatNumber(quote.price)}</span>
+                          </span>
+                          <span className={`text-sm font-semibold num ${group.color}`}>
+                            {quote.change >= 0 ? "+" : ""}{formatNumber(quote.changePercent)}%
+                          </span>
+                        </button>
+                      )) : (
+                        <div className="py-6 text-sm text-muted-foreground">No stocks in this group.</div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <aside id="news" className="scroll-mt-28 rounded-3xl border bg-card p-5 shadow-sm">
+              <div className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
+                Latest updates
+              </div>
+              <h2 className="mt-1 text-xl font-bold">Market news</h2>
+              <div className="mt-4 divide-y">
+                {marketNews.slice(0, 5).map((item) => (
+                  <a
+                    key={`${item.title}-${item.time}`}
+                    href={item.url ?? "#"}
+                    target={item.url ? "_blank" : undefined}
+                    rel={item.url ? "noreferrer" : undefined}
+                    className="block py-3 hover:text-primary"
+                  >
+                    <div className="text-sm font-semibold leading-5">{item.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {item.source} · {item.time}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </aside>
+          </section>
+        )}
+        <div id="stock-search" className="max-w-2xl scroll-mt-28">
+          <div className="text-sm font-semibold text-primary">Stock research</div>
+          <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Find any listed company</h2>
           <p className="mt-3 text-muted-foreground">
             Search symbols such as RELIANCE.NS, TCS.NS, AAPL or MSFT. Quotes may be delayed.
           </p>

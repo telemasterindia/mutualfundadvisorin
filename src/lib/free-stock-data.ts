@@ -1,6 +1,7 @@
 const BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart";
 const CACHE_SECONDS = 5 * 60;
 const SEARCH_URL = "https://query1.finance.yahoo.com/v1/finance/search";
+const SPARK_URL = "https://query1.finance.yahoo.com/v7/finance/spark";
 
 type ChartResult = {
   meta?: {
@@ -44,6 +45,89 @@ type ChartPayload = {
 
 export function normalizeStockSymbol(value: string) {
   return value.trim().toUpperCase();
+}
+
+type SparkPayload = {
+  spark?: {
+    result?: Array<{
+      symbol?: string;
+      response?: Array<{
+        meta?: {
+          symbol?: string;
+          shortName?: string;
+          regularMarketPrice?: number;
+          chartPreviousClose?: number;
+          previousClose?: number;
+          currency?: string;
+        };
+      }>;
+    }>;
+  };
+};
+
+export async function getIndianMarketSnapshot() {
+  const symbols = [
+    "^NSEI",
+    "^BSESN",
+    "^NSEBANK",
+    "RELIANCE.NS",
+    "TCS.NS",
+    "HDFCBANK.NS",
+    "INFY.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "BHARTIARTL.NS",
+    "ITC.NS",
+    "TATASTEEL.NS",
+    "TATAPOWER.NS",
+  ];
+  const displayNames: Record<string, string> = {
+    "^NSEI": "Nifty 50",
+    "^BSESN": "Sensex",
+    "^NSEBANK": "Bank Nifty",
+    "RELIANCE.NS": "Reliance",
+    "TCS.NS": "TCS",
+    "HDFCBANK.NS": "HDFC Bank",
+    "INFY.NS": "Infosys",
+    "ICICIBANK.NS": "ICICI Bank",
+    "SBIN.NS": "SBI",
+    "BHARTIARTL.NS": "Bharti Airtel",
+    "ITC.NS": "ITC",
+    "TATASTEEL.NS": "Tata Steel",
+    "TATAPOWER.NS": "Tata Power",
+  };
+  const params = new URLSearchParams({
+    symbols: symbols.join(","),
+    range: "5d",
+    interval: "1d",
+  });
+  const response = await fetch(`${SPARK_URL}?${params}`, {
+    headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0" },
+    next: { revalidate: CACHE_SECONDS },
+  });
+  if (!response.ok) throw new Error("Market snapshot is temporarily unavailable.");
+
+  const payload = (await response.json()) as SparkPayload;
+  return (payload.spark?.result ?? []).flatMap((item) => {
+    const meta = item.response?.[0]?.meta;
+    const price = meta?.regularMarketPrice;
+    const previousClose = meta?.chartPreviousClose ?? meta?.previousClose;
+    if (typeof price !== "number" || typeof previousClose !== "number") return [];
+    const change = price - previousClose;
+    return [{
+      symbol: meta?.symbol ?? item.symbol ?? "",
+      name:
+        displayNames[meta?.symbol ?? item.symbol ?? ""] ??
+        meta?.shortName ??
+        meta?.symbol ??
+        item.symbol ??
+        "",
+      price,
+      change,
+      changePercent: previousClose ? (change / previousClose) * 100 : 0,
+      currency: meta?.currency ?? "INR",
+    }];
+  });
 }
 
 type SearchPayload = {

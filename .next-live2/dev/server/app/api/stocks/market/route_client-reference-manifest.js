@@ -1,0 +1,1 @@
+globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/stocks/market/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"C:\\Users\\Gaurav vij\\OneDrive\\Desktop\\mutualFunds\\app\\api\\stocks\\market\\route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};

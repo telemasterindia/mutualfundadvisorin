@@ -1,0 +1,3 @@
+{
+  "/api/mutual-funds/search/route": "app/api/mutual-funds/search/route.js"
+}

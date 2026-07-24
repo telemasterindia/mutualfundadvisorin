@@ -17,7 +17,13 @@
     ".next-dev/types/**/*.ts",
     ".next-dev/dev/types/**/*.ts",
     ".next-build/types/**/*.ts",
-    ".next-build/dev/types/**/*.ts"
+    ".next-build/dev/types/**/*.ts",
+    ".next-verify/types/**/*.ts",
+    ".next-verify/dev/types/**/*.ts",
+    ".next-live/types/**/*.ts",
+    ".next-live/dev/types/**/*.ts",
+    ".next-live2/types/**/*.ts",
+    ".next-live2/dev/types/**/*.ts"
   ],
   "compilerOptions": {
     "target": "ES2022",

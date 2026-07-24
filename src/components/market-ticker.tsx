@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 type IndexQuote = {
+  symbol: string;
   name: string;
   price: number;
   change: number;
@@ -57,8 +58,14 @@ export function MarketTicker() {
           key={`${quote.name}-${copy}`}
           className="flex shrink-0 items-center gap-2 border-r border-border/60 px-6 py-2"
         >
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-            {quote.name === "Nifty 50" ? "N50" : "BSE"}
+          <span className="grid h-7 min-w-7 place-items-center rounded-full bg-primary/10 px-1 text-[9px] font-bold text-primary">
+            {quote.symbol === "^NSEI"
+              ? "N50"
+              : quote.symbol === "^BSESN"
+                ? "BSE"
+                : quote.symbol === "^NSEBANK"
+                  ? "BNK"
+                  : quote.symbol.replace(".NS", "").slice(0, 4)}
           </span>
           <span className="whitespace-nowrap font-semibold text-foreground">{quote.name}</span>
           <span className="num whitespace-nowrap text-foreground">

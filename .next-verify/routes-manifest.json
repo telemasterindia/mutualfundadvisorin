@@ -1,0 +1,283 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://widgets.tradingview-widget.com https://s3.tradingview.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss://*.tradingview.com; frame-src 'self' https://s.tradingview.com https://www.tradingview.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        }
+      ],
+      "regex": "^(?:/(.*))(?:/)?$"
+    }
+  ],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/funds/[schemeCode]",
+      "regex": "^/funds/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPschemeCode": "nxtPschemeCode"
+      },
+      "namedRegex": "^/funds/(?<nxtPschemeCode>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/learn/[slug]",
+      "regex": "^/learn/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/learn/(?<nxtPslug>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/api/funds",
+      "regex": "^/api/funds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/funds(?:/)?$"
+    },
+    {
+      "page": "/api/market-indices",
+      "regex": "^/api/market\\-indices(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/market\\-indices(?:/)?$"
+    },
+    {
+      "page": "/api/market-news",
+      "regex": "^/api/market\\-news(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/market\\-news(?:/)?$"
+    },
+    {
+      "page": "/api/mutual-funds/search",
+      "regex": "^/api/mutual\\-funds/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/mutual\\-funds/search(?:/)?$"
+    },
+    {
+      "page": "/api/stocks/history",
+      "regex": "^/api/stocks/history(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/stocks/history(?:/)?$"
+    },
+    {
+      "page": "/api/stocks/market",
+      "regex": "^/api/stocks/market(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/stocks/market(?:/)?$"
+    },
+    {
+      "page": "/api/stocks/overview",
+      "regex": "^/api/stocks/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/stocks/overview(?:/)?$"
+    },
+    {
+      "page": "/api/stocks/search",
+      "regex": "^/api/stocks/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/stocks/search(?:/)?$"
+    },
+    {
+      "page": "/auth/callback",
+      "regex": "^/auth/callback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/callback(?:/)?$"
+    },
+    {
+      "page": "/book-consultation",
+      "regex": "^/book\\-consultation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/book\\-consultation(?:/)?$"
+    },
+    {
+      "page": "/calculator",
+      "regex": "^/calculator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/calculator(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
+    },
+    {
+      "page": "/dashboard",
+      "regex": "^/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/forgot-password",
+      "regex": "^/forgot\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/forgot\\-password(?:/)?$"
+    },
+    {
+      "page": "/funds",
+      "regex": "^/funds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/funds(?:/)?$"
+    },
+    {
+      "page": "/get-started",
+      "regex": "^/get\\-started(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/get\\-started(?:/)?$"
+    },
+    {
+      "page": "/icon.svg",
+      "regex": "^/icon\\.svg(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.svg(?:/)?$"
+    },
+    {
+      "page": "/learn",
+      "regex": "^/learn(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/learn(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/onboarding",
+      "regex": "^/onboarding(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/onboarding(?:/)?$"
+    },
+    {
+      "page": "/portfolio",
+      "regex": "^/portfolio(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/portfolio(?:/)?$"
+    },
+    {
+      "page": "/reset-password",
+      "regex": "^/reset\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reset\\-password(?:/)?$"
+    },
+    {
+      "page": "/signup",
+      "regex": "^/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/signup(?:/)?$"
+    },
+    {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/stocks",
+      "regex": "^/stocks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/stocks(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
