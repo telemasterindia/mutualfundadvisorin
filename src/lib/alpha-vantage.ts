@@ -31,6 +31,24 @@ export type AlphaVantageCompanyOverview = {
   description: string | null;
 };
 
+export type AlphaVantageStockQuote = {
+  symbol: string;
+  name: null;
+  exchange: null;
+  currency: string;
+  price: number;
+  previousClose: number | null;
+  change: number | null;
+  changePercent: number | null;
+  dayHigh: number | null;
+  dayLow: number | null;
+  volume: number | null;
+  fiftyTwoWeekHigh: null;
+  fiftyTwoWeekLow: null;
+  marketCap: null;
+  marketTime: string | null;
+};
+
 type AlphaVantageDailyResponse = {
   "Meta Data"?: {
     "2. Symbol"?: string;
@@ -65,6 +83,23 @@ type AlphaVantageOverviewResponse = {
   RevenueTTM?: string;
   ProfitMargin?: string;
   Description?: string;
+  "Error Message"?: string;
+  Note?: string;
+  Information?: string;
+};
+
+type AlphaVantageQuoteResponse = {
+  "Global Quote"?: {
+    "01. symbol"?: string;
+    "03. high"?: string;
+    "04. low"?: string;
+    "05. price"?: string;
+    "06. volume"?: string;
+    "07. latest trading day"?: string;
+    "08. previous close"?: string;
+    "09. change"?: string;
+    "10. change percent"?: string;
+  };
   "Error Message"?: string;
   Note?: string;
   Information?: string;
@@ -153,6 +188,51 @@ export async function getDailyStockHistory(symbol: string) {
       volume: Number(values["5. volume"]),
     })),
   } satisfies AlphaVantageDailySeries;
+}
+
+export async function getStockQuote(symbol: string) {
+  const normalizedSymbol = normalizeStockSymbol(symbol);
+
+  if (!isSupportedStockSymbol(normalizedSymbol)) {
+    throw new Error("Unsupported stock symbol.");
+  }
+
+  const payload = await fetchAlphaVantage<AlphaVantageQuoteResponse>(
+    {
+      function: "GLOBAL_QUOTE",
+      symbol: normalizedSymbol,
+    },
+    5 * 60,
+  );
+  const quote = payload["Global Quote"];
+  const price = Number(quote?.["05. price"]);
+
+  if (!quote?.["01. symbol"] || !Number.isFinite(price)) {
+    throw new Error(`No stock quote returned for ${normalizedSymbol}.`);
+  }
+
+  const numberOrNull = (value?: string) => {
+    const parsed = Number(value);
+    return value && Number.isFinite(parsed) ? parsed : null;
+  };
+
+  return {
+    symbol: quote["01. symbol"],
+    name: null,
+    exchange: null,
+    currency: normalizedSymbol.endsWith(".NS") || normalizedSymbol.endsWith(".BO") ? "INR" : "USD",
+    price,
+    previousClose: numberOrNull(quote["08. previous close"]),
+    change: numberOrNull(quote["09. change"]),
+    changePercent: numberOrNull(quote["10. change percent"]?.replace("%", "")),
+    dayHigh: numberOrNull(quote["03. high"]),
+    dayLow: numberOrNull(quote["04. low"]),
+    volume: numberOrNull(quote["06. volume"]),
+    fiftyTwoWeekHigh: null,
+    fiftyTwoWeekLow: null,
+    marketCap: null,
+    marketTime: quote["07. latest trading day"] ?? null,
+  } satisfies AlphaVantageStockQuote;
 }
 
 export async function getCompanyOverview(symbol: string) {

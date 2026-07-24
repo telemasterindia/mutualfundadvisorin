@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,17 @@ const categories = [
   "Debt",
   "Gold ETF",
 ];
+
+const categorySlugs: Record<string, string> = {
+  All: "all",
+  "Large Cap": "large-cap",
+  "Flexi Cap": "flexi-cap",
+  "Mid Cap": "mid-cap",
+  "Small Cap": "small-cap",
+  Sectoral: "sectoral",
+  Debt: "debt",
+  "Gold ETF": "gold-etf",
+};
 
 const categoryDetails: Record<
   string,
@@ -95,33 +106,14 @@ function FundExplorer() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [defaultFunds, setDefaultFunds] = useState<AmfiFund[]>([]);
+  const [defaultTotal, setDefaultTotal] = useState(0);
   const [loadingDefaultFunds, setLoadingDefaultFunds] = useState(true);
   const [apiFunds, setApiFunds] = useState<AmfiFund[]>([]);
   const [loadingApiFunds, setLoadingApiFunds] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const hasLiveSearch = q.trim().length >= 2;
   const selectedCategory = categoryDetails[cat] ?? categoryDetails.All;
-
-  const filterByCategory = (funds: AmfiFund[]) => {
-    if (cat === "All") return funds;
-    const keywords = selectedCategory.keywords;
-
-    return funds.filter((fund) => {
-      const text = [fund.schemeName, fund.category, fund.fundHouse].filter(Boolean).join(" ");
-      const normalizedText = text.toLowerCase();
-
-      return keywords.some((keyword) => normalizedText.includes(keyword));
-    });
-  };
-
-  const filteredApiFunds = useMemo(
-    () => filterByCategory(apiFunds),
-    [apiFunds, cat, selectedCategory.keywords],
-  );
-  const filteredDefaultFunds = useMemo(
-    () => filterByCategory(defaultFunds),
-    [defaultFunds, cat, selectedCategory.keywords],
-  );
+  const categorySlug = categorySlugs[cat] ?? "all";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -129,7 +121,7 @@ function FundExplorer() {
     async function loadDefaultFunds() {
       setLoadingDefaultFunds(true);
       try {
-        const response = await fetch("/api/funds?limit=24", {
+        const response = await fetch(`/api/funds?limit=60&category=${categorySlug}`, {
           signal: controller.signal,
         });
 
@@ -137,9 +129,11 @@ function FundExplorer() {
 
         const payload = (await response.json()) as {
           funds?: AmfiFund[];
+          total?: number;
         };
 
         setDefaultFunds(payload.funds ?? []);
+        setDefaultTotal(payload.total ?? 0);
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
           setDefaultFunds([]);
@@ -156,7 +150,23 @@ function FundExplorer() {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [categorySlug]);
+
+  async function loadMoreDefaultFunds() {
+    setLoadingDefaultFunds(true);
+    try {
+      const response = await fetch(
+        `/api/funds?limit=60&offset=${defaultFunds.length}&category=${categorySlug}`,
+      );
+      if (!response.ok) throw new Error("More funds failed");
+
+      const payload = (await response.json()) as { funds?: AmfiFund[]; total?: number };
+      setDefaultFunds((current) => [...current, ...(payload.funds ?? [])]);
+      setDefaultTotal(payload.total ?? defaultTotal);
+    } finally {
+      setLoadingDefaultFunds(false);
+    }
+  }
 
   useEffect(() => {
     const query = q.trim();
@@ -174,9 +184,10 @@ function FundExplorer() {
       setApiError(null);
 
       try {
-        const response = await fetch(`/api/funds?q=${encodeURIComponent(query)}&limit=9`, {
-          signal: controller.signal,
-        });
+        const response = await fetch(
+          `/api/funds?q=${encodeURIComponent(query)}&category=${categorySlug}&limit=60`,
+          { signal: controller.signal },
+        );
 
         if (!response.ok) {
           throw new Error("Search failed");
@@ -205,7 +216,7 @@ function FundExplorer() {
       window.clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [q]);
+  }, [q, categorySlug]);
 
   return (
     <div className="min-h-screen">
@@ -253,13 +264,18 @@ function FundExplorer() {
         {hasLiveSearch ? (
           <LiveSearchResults
             query={q}
-            funds={filteredApiFunds}
+            funds={apiFunds}
             isLoading={loadingApiFunds}
             error={apiError}
             category={cat}
           />
         ) : (
-          <CuratedFundGrid funds={filteredDefaultFunds} isLoading={loadingDefaultFunds} />
+          <CuratedFundGrid
+            funds={defaultFunds}
+            isLoading={loadingDefaultFunds}
+            total={defaultTotal}
+            onLoadMore={loadMoreDefaultFunds}
+          />
         )}
       </main>
       <SiteFooter />
@@ -344,8 +360,18 @@ function LiveSearchResults({
   );
 }
 
-function CuratedFundGrid({ funds, isLoading }: { funds: AmfiFund[]; isLoading: boolean }) {
-  if (isLoading) {
+function CuratedFundGrid({
+  funds,
+  isLoading,
+  total,
+  onLoadMore,
+}: {
+  funds: AmfiFund[];
+  isLoading: boolean;
+  total: number;
+  onLoadMore: () => void;
+}) {
+  if (isLoading && funds.length === 0) {
     return (
       <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, index) => (
@@ -364,47 +390,61 @@ function CuratedFundGrid({ funds, isLoading }: { funds: AmfiFund[]; isLoading: b
   }
 
   return (
-    <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {funds.map((fund) => (
-        <div
-          key={`${fund.schemeCode}-${fund.schemeName}`}
-          className="glass rounded-2xl p-5 transition hover:-translate-y-1 hover:shadow-elegant"
-        >
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                {fund.fundHouse ?? "Open-ended scheme"}
+    <>
+      <div className="mt-6 flex items-center justify-between text-sm text-muted-foreground">
+        <span>
+          Showing {funds.length} of {total} schemes
+        </span>
+      </div>
+      <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {funds.map((fund) => (
+          <div
+            key={`${fund.schemeCode}-${fund.schemeName}`}
+            className="glass rounded-2xl p-5 transition hover:-translate-y-1 hover:shadow-elegant"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                  {fund.fundHouse ?? "Open-ended scheme"}
+                </div>
+                <div className="mt-1 min-h-12 font-semibold">{fund.schemeName}</div>
               </div>
-              <div className="mt-1 min-h-12 font-semibold">{fund.schemeName}</div>
+              <div className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+                Fresh NAV
+              </div>
             </div>
-            <div className="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
-              Fresh NAV
+            <div className="mt-4 rounded-lg bg-secondary/60 p-3">
+              <div className="text-[10px] uppercase text-muted-foreground">Latest NAV</div>
+              <div className="mt-1 text-xl font-semibold">Rs. {fund.navText}</div>
+              <div className="mt-1 text-xs text-muted-foreground">As on {fund.date}</div>
+            </div>
+            <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{fund.category ?? "Category unavailable"}</span>
+              <span>Code {fund.schemeCode}</span>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <Button asChild size="sm" variant="outline" className="flex-1">
+                <Link href={`/funds/${fund.schemeCode}`}>View history</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
+              >
+                <Link href={consultationHref(fund, "invest")}>Invest</Link>
+              </Button>
             </div>
           </div>
-          <div className="mt-4 rounded-lg bg-secondary/60 p-3">
-            <div className="text-[10px] uppercase text-muted-foreground">Latest NAV</div>
-            <div className="mt-1 text-xl font-semibold">Rs. {fund.navText}</div>
-            <div className="mt-1 text-xs text-muted-foreground">As on {fund.date}</div>
-          </div>
-          <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-            <span>{fund.category ?? "Category unavailable"}</span>
-            <span>Code {fund.schemeCode}</span>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <Button asChild size="sm" variant="outline" className="flex-1">
-              <Link href={`/funds/${fund.schemeCode}`}>View history</Link>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="flex-1 gradient-bg text-primary-foreground hover:opacity-90"
-            >
-              <Link href={consultationHref(fund, "invest")}>Invest</Link>
-            </Button>
-          </div>
+        ))}
+      </div>
+      {funds.length < total ? (
+        <div className="mt-8 flex justify-center">
+          <Button onClick={onLoadMore} disabled={isLoading} variant="outline">
+            {isLoading ? "Loading..." : "Load more funds"}
+          </Button>
         </div>
-      ))}
-    </div>
+      ) : null}
+    </>
   );
 }
 

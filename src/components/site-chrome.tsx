@@ -25,6 +25,7 @@ import { MarketTicker } from "@/components/market-ticker";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/funds", label: "Mutual Funds" },
+  { to: "/stocks", label: "Stocks" },
   { to: "/calculator", label: "Calculators" },
   { to: "/learn", label: "Learn" },
   { to: "/about", label: "About Us" },
@@ -296,6 +297,12 @@ export function SiteFooter() {
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Mutual fund education, planning tools and distribution support for Indian investors.
             </p>
+            <div className="mt-4 rounded-xl border border-border/70 bg-secondary/40 px-3 py-2.5 text-xs leading-relaxed">
+              <div className="font-semibold text-foreground">
+                AMFI-Registered Mutual Fund Distributor
+              </div>
+              <div className="mt-0.5 text-muted-foreground">ARN: 349461</div>
+            </div>
             <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
               <div className="font-semibold text-foreground">Amit Chadha</div>
               <div className="text-xs">Founder &amp; Investment Advisor</div>

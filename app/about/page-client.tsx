@@ -40,11 +40,8 @@ export default function Page() {
                 <Row label="Year established" value="To be confirmed" pending />
                 <Row label="Office location" value={CONTACT.address} />
                 <Row label="Customers served" value="To be confirmed" pending />
-                <Row
-                  label="ARN and validity"
-                  value="Verification details to be published"
-                  pending
-                />
+                <Row label="Registration" value="AMFI-Registered Mutual Fund Distributor" />
+                <Row label="ARN" value="349461" />
               </dl>
             </InfoCard>
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCompanyOverview, normalizeStockSymbol } from "@/lib/alpha-vantage";
+import { getFreeStockOverview, normalizeStockSymbol } from "@/lib/free-stock-data";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,28 +10,28 @@ export async function GET(request: Request) {
   }
 
   try {
-    const overview = await getCompanyOverview(symbol);
+    const overview = await getFreeStockOverview(symbol);
 
     return NextResponse.json(
       {
-        source: "Alpha Vantage",
+        source: "Yahoo Finance",
         realtime: false,
-        cachePolicy: "12h server cache",
+        cachePolicy: "5m server cache",
         overview,
       },
       {
         headers: {
-          "Cache-Control": "s-maxage=43200, stale-while-revalidate=86400",
+          "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
         },
       },
     );
   } catch (error) {
     return NextResponse.json(
       {
-        source: "Alpha Vantage",
+        source: "Yahoo Finance",
         realtime: false,
         symbol,
-        error: error instanceof Error ? error.message : "Unable to fetch company overview.",
+        error: error instanceof Error ? error.message : "Unable to fetch stock overview.",
       },
       { status: 502 },
     );
