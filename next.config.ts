@@ -18,10 +18,11 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
-  // Vercel's Next.js runtime expects deployment manifests in `.next`. Locally,
-  // separate dev/build output avoids Windows OneDrive EPERM locks.
+  // Vercel expects `.next`. Local dev and production builds use separate,
+  // stable directories so a running dev server never locks build output.
   distDir:
-    process.env.NEXT_DIST_DIR ?? (isVercel ? ".next" : isDevelopment ? ".next-dev" : ".next-build"),
+    process.env.NEXT_DIST_DIR ??
+    (isVercel ? ".next" : isDevelopment ? ".next-local-dev" : ".next-local-build"),
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,

@@ -407,7 +407,7 @@ function AdminCRM() {
 
         {/* Tabs */}
         <Tabs defaultValue="leads" className="mt-6">
-          <TabsList className="grid w-full grid-cols-2 sm:w-auto sm:grid-cols-5 rounded-full bg-secondary/60 p-1">
+          <TabsList className="grid w-full grid-cols-1 rounded-2xl bg-secondary/60 p-1 min-[420px]:grid-cols-2 sm:w-auto sm:grid-cols-5 sm:rounded-full">
             <TabsTrigger value="leads" className="rounded-full text-xs">
               Leads{" "}
               <span className="ml-1 rounded-full bg-primary/15 px-1.5 text-[10px] text-primary">
@@ -441,7 +441,7 @@ function AdminCRM() {
           <TabsContent value="leads" className="mt-5">
             <Card>
               <div className="flex flex-wrap items-center gap-2">
-                <div className="relative flex-1 min-w-[200px]">
+                <div className="relative w-full min-w-0 sm:min-w-[200px] sm:flex-1">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={search}
@@ -451,7 +451,7 @@ function AdminCRM() {
                   />
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[160px] rounded-full">
+                  <SelectTrigger className="w-full rounded-full sm:w-[160px]">
                     <Filter className="mr-1 h-3.5 w-3.5" />
                     <SelectValue />
                   </SelectTrigger>

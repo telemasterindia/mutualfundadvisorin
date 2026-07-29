@@ -6,7 +6,19 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: [".next", "node_modules", "out"] },
+  {
+    ignores: [
+      ".next",
+      ".next-*",
+      "**/.next/**",
+      "**/.next-*/**",
+      "node_modules",
+      "out",
+      "dist",
+      "*.log",
+      "tsconfig.tsbuildinfo",
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

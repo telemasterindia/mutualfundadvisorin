@@ -192,6 +192,7 @@
   }
   html {
     font-family: var(--font-sans);
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -203,11 +204,23 @@
     background-image: var(--gradient-hero);
     background-attachment: fixed;
     min-height: 100vh;
+    overflow-x: clip;
     font-feature-settings:
       "rlig" 1,
       "calt" 1,
       "ss01" 1,
       "cv11" 1;
+  }
+  img,
+  video,
+  canvas {
+    max-width: 100%;
+  }
+  input,
+  select,
+  textarea,
+  button {
+    min-width: 0;
   }
   h1,
   h2,
@@ -348,12 +361,17 @@
   }
 }
 .market-ticker-track {
-  animation: ticker-scroll 32s linear infinite;
+  animation: ticker-scroll 80s linear infinite;
   backface-visibility: hidden;
   will-change: transform;
 }
 .market-ticker:hover .market-ticker-track {
   animation-play-state: paused;
+}
+@media (max-width: 374px) {
+  .market-ticker-track {
+    animation-duration: 96s !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .market-ticker-track {

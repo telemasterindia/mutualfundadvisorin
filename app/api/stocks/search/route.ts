@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   try {
     const results = await searchFreeStocks(query);
     return NextResponse.json(
-      { source: "Yahoo Finance", results },
+      { source: "FinEdge API", results },
       { headers: { "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400" } },
     );
   } catch (error) {

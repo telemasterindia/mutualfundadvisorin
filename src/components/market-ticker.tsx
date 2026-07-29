@@ -15,6 +15,17 @@ const numberFormatter = new Intl.NumberFormat("en-IN", {
   maximumFractionDigits: 2,
 });
 
+const indexBadges: Record<string, string> = {
+  NIF50: "N50",
+  SNSXSENSEX: "BSE",
+  NIFBAN: "BNK",
+  NIFNEX50: "NX50",
+  NIFMID100: "MID",
+  NIFIT: "IT",
+  NIFAUT: "AUTO",
+  NIFMET: "MET",
+};
+
 export function MarketTicker() {
   const [quotes, setQuotes] = useState<IndexQuote[]>([]);
   const [error, setError] = useState(false);
@@ -56,16 +67,10 @@ export function MarketTicker() {
       return (
         <div
           key={`${quote.name}-${copy}`}
-          className="flex shrink-0 items-center gap-2 border-r border-border/60 px-6 py-2"
+          className="flex shrink-0 items-center gap-2 border-r border-border/60 px-4 py-2 text-sm sm:px-6"
         >
           <span className="grid h-7 min-w-7 place-items-center rounded-full bg-primary/10 px-1 text-[9px] font-bold text-primary">
-            {quote.symbol === "^NSEI"
-              ? "N50"
-              : quote.symbol === "^BSESN"
-                ? "BSE"
-                : quote.symbol === "^NSEBANK"
-                  ? "BNK"
-                  : quote.symbol.replace(".NS", "").slice(0, 4)}
+            {indexBadges[quote.symbol] ?? quote.symbol.slice(0, 4)}
           </span>
           <span className="whitespace-nowrap font-semibold text-foreground">{quote.name}</span>
           <span className="num whitespace-nowrap text-foreground">
@@ -89,7 +94,10 @@ export function MarketTicker() {
     >
       <div className="market-ticker min-h-[46px] overflow-hidden">
         {quotes.length > 0 ? (
-          <div className="market-ticker-track flex w-max">
+          <div
+            className="market-ticker-track flex w-max"
+            style={{ animationDuration: `${Math.max(72, quotes.length * 10)}s` }}
+          >
             <div className="flex shrink-0">{renderQuotes(1)}</div>
             <div className="flex shrink-0" aria-hidden="true">
               {renderQuotes(2)}

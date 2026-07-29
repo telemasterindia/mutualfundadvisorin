@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const quotes = await getIndianMarketSnapshot();
     return NextResponse.json(
-      { source: "Yahoo Finance", delayed: true, quotes },
+      { source: "FinEdge API", delayed: true, quotes },
       { headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=600" } },
     );
   } catch (error) {

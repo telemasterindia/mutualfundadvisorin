@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Bot, ChevronRight, RotateCcw, Sparkles } from "lucide-react";
+import { Bot, ChevronRight, RotateCcw, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,6 +101,26 @@ type Recommendation = {
   calculator: { label: string; href: string; reason: string };
   note?: string;
   furtherReading?: { label: string; href: string };
+};
+
+type MarketIdeas = {
+  asOf: string;
+  allocation: { mutualFunds: number; stocks: number; reserve: number };
+  monthlyAmount: number | null;
+  funds: Array<{
+    schemeCode: number;
+    name: string;
+    category: string;
+    trailingReturn: number;
+    monthlySip: number | null;
+  }>;
+  stocks: Array<{
+    symbol: string;
+    name: string;
+    price: number;
+    trailingReturn: number;
+    monthlyAmount: number | null;
+  }>;
 };
 
 function buildRecommendationLegacy(profile: Profile): Recommendation {
@@ -523,6 +543,8 @@ function buildRecommendation(profile: Profile): Recommendation {
 export function PersonaGuide() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [marketIdeas, setMarketIdeas] = useState<MarketIdeas | null>(null);
+  const [marketIdeasLoading, setMarketIdeasLoading] = useState(false);
   const [profile, setProfile] = useState<Profile>({
     age: "",
     goal: "",
@@ -540,6 +562,32 @@ export function PersonaGuide() {
     () => (submitted ? buildRecommendation(profile) : null),
     [profile, submitted],
   );
+
+  useEffect(() => {
+    if (!submitted || !profile.risk) return;
+    const controller = new AbortController();
+    const params = new URLSearchParams({
+      risk: profile.risk,
+      horizon: profile.horizon,
+      experience: profile.experience,
+      capacity: profile.capacity,
+      capacityType: profile.capacityType,
+    });
+    setMarketIdeasLoading(true);
+    fetch(`/api/advisor/market-ideas?${params}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Market ideas unavailable");
+        return response.json() as Promise<MarketIdeas>;
+      })
+      .then(setMarketIdeas)
+      .catch((requestError) => {
+        if ((requestError as Error).name !== "AbortError") setMarketIdeas(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setMarketIdeasLoading(false);
+      });
+    return () => controller.abort();
+  }, [profile, submitted]);
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -577,6 +625,7 @@ export function PersonaGuide() {
   function reset() {
     setSubmitted(false);
     setError("");
+    setMarketIdeas(null);
   }
 
   const goalLabel = goals.find(([value]) => value === profile.goal)?.[1];
@@ -754,7 +803,7 @@ export function PersonaGuide() {
               </div>
               <div>
                 <Label htmlFor="guide-capacity">Investment capacity (optional)</Label>
-                <div className="mt-1.5 grid grid-cols-[125px_1fr] gap-2">
+                <div className="mt-1.5 grid grid-cols-1 gap-2 min-[420px]:grid-cols-[125px_1fr]">
                   <Select
                     value={profile.capacityType}
                     onValueChange={(capacityType) =>
@@ -810,6 +859,108 @@ export function PersonaGuide() {
                     </li>
                   ))}
                 </ul>
+              </section>
+              <section className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <h3 className="font-display text-base font-bold">
+                    Current Performance Screen & SIP Split
+                  </h3>
+                </div>
+                {marketIdeasLoading ? (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Comparing current NAV history and market prices…
+                  </p>
+                ) : marketIdeas ? (
+                  <div className="mt-3 space-y-4">
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="rounded-xl bg-background p-2">
+                        <div className="font-bold">{marketIdeas.allocation.mutualFunds}%</div>
+                        <div className="text-muted-foreground">Mutual funds</div>
+                      </div>
+                      <div className="rounded-xl bg-background p-2">
+                        <div className="font-bold">{marketIdeas.allocation.stocks}%</div>
+                        <div className="text-muted-foreground">Stocks</div>
+                      </div>
+                      <div className="rounded-xl bg-background p-2">
+                        <div className="font-bold">{marketIdeas.allocation.reserve}%</div>
+                        <div className="text-muted-foreground">Reserve</div>
+                      </div>
+                    </div>
+
+                    {marketIdeas.funds.length ? (
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wide">
+                          Matching direct-growth funds
+                        </h4>
+                        <ul className="mt-2 space-y-2">
+                          {marketIdeas.funds.map((fund) => (
+                            <li key={fund.schemeCode} className="rounded-xl bg-background p-3">
+                              <Link
+                                href={`/funds/${fund.schemeCode}`}
+                                className="font-semibold text-primary hover:underline"
+                              >
+                                {fund.name}
+                              </Link>
+                              <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+                                <span>Trailing 1Y: {fund.trailingReturn.toFixed(1)}%</span>
+                                {fund.monthlySip ? (
+                                  <span>
+                                    SIP illustration: ₹{fund.monthlySip.toLocaleString("en-IN")}/mo
+                                  </span>
+                                ) : null}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+
+                    {marketIdeas.stocks.length ? (
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wide">
+                          Stock research watchlist
+                        </h4>
+                        <ul className="mt-2 grid gap-2 sm:grid-cols-3">
+                          {marketIdeas.stocks.map((stock) => (
+                            <li key={stock.symbol} className="rounded-xl bg-background p-3">
+                              <Link
+                                href="/stocks#stock-search"
+                                className="font-semibold text-primary hover:underline"
+                              >
+                                {stock.name}
+                              </Link>
+                              <div className="mt-1 text-xs text-muted-foreground">
+                                1Y price change: {stock.trailingReturn.toFixed(1)}%
+                              </div>
+                              {stock.monthlyAmount ? (
+                                <div className="mt-1 text-xs">
+                                  Research allocation: ₹
+                                  {stock.monthlyAmount.toLocaleString("en-IN")}/mo
+                                </div>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-xs leading-5 text-muted-foreground">
+                        Direct stocks are excluded for this profile. Use diversified funds first;
+                        keep the reserve for emergencies or near-term needs.
+                      </p>
+                    )}
+                    <p className="text-[11px] leading-5 text-muted-foreground">
+                      Ranked only by trailing one-year performance within profile-matched screens.
+                      Past returns can reverse and are not a forecast. Review riskometer, costs,
+                      portfolio overlap and scheme documents before investing.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Live performance comparison is temporarily unavailable. The category guidance
+                    above still applies.
+                  </p>
+                )}
               </section>
               <section>
                 <h3 className="font-display text-base font-bold">Try This Next</h3>

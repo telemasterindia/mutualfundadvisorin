@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(
       {
-        source: "Yahoo Finance",
+        source: "FinEdge API",
         realtime: false,
         cachePolicy: "5m server cache",
         overview,
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
   } catch (error) {
     return NextResponse.json(
       {
-        source: "Yahoo Finance",
+        source: "FinEdge API",
         realtime: false,
         symbol,
         error: error instanceof Error ? error.message : "Unable to fetch stock overview.",

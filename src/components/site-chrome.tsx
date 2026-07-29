@@ -16,6 +16,8 @@ import {
   Home,
   CalendarClock,
   Wallet,
+  BadgeCheck,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme";
@@ -139,7 +141,7 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-2 pt-2 sm:px-4 sm:pt-4">
+    <header className="sticky top-0 z-50 w-full px-1 pt-1 sm:px-4 sm:pt-4">
       <div
         style={{ maxWidth: scrolled ? 1100 : 1280 }}
         className={`mx-auto rounded-2xl transition-all duration-500 ${
@@ -148,16 +150,16 @@ export function SiteHeader() {
             : "border border-border/60 bg-card/95 shadow-soft backdrop-blur-md"
         }`}
       >
-        <div className="flex h-14 items-center justify-between px-3 sm:h-16 sm:px-5">
+        <div className="flex h-14 min-w-0 items-center justify-between gap-2 px-3 sm:h-16 sm:px-5">
           <Link
             href="/"
             prefetch={false}
-            className="flex items-center gap-2 font-display text-base font-bold sm:text-lg"
+            className="flex min-w-0 items-center gap-2 font-display text-base font-bold sm:text-lg"
           >
             <span className="grid h-8 w-8 place-items-center rounded-xl gradient-bg shadow-glow">
               <TrendingUp className="h-4 w-4 text-primary-foreground" />
             </span>
-            <span>WealthMaster India</span>
+            <span className="truncate max-[380px]:hidden">WealthMaster India</span>
           </Link>
 
           <nav className="hidden items-center gap-0.5 lg:flex">
@@ -179,7 +181,7 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <Button
               variant="ghost"
               size="icon"
@@ -284,9 +286,30 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-32 border-t border-border/60">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-4">
+    <footer className="relative mt-20 overflow-hidden border-t border-border/60 bg-card/80 sm:mt-32">
+      <div className="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-success/10 blur-3xl" />
+      <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mb-12 flex flex-col gap-6 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-background/80 to-success/10 p-6 shadow-soft sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="max-w-2xl">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Clear guidance. Transparent process.
+            </div>
+            <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+              Build your investment plan with confidence.
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Speak directly with Amit Chadha about your goals and mutual fund questions.
+            </p>
+          </div>
+          <Link href="/book-consultation" prefetch={false} className="shrink-0">
+            <Button className="h-11 rounded-full px-6 gradient-bg text-primary-foreground shadow-glow">
+              Book Free Consultation <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+        <div className="grid gap-10 md:grid-cols-4 md:gap-12">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 font-display text-lg font-bold">
               <span className="grid h-8 w-8 place-items-center rounded-xl gradient-bg">
@@ -297,11 +320,14 @@ export function SiteFooter() {
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Mutual fund education, planning tools and distribution support for Indian investors.
             </p>
-            <div className="mt-4 rounded-xl border border-border/70 bg-secondary/40 px-3 py-2.5 text-xs leading-relaxed">
-              <div className="font-semibold text-foreground">
-                AMFI-Registered Mutual Fund Distributor
+            <div className="mt-4 flex items-center gap-3 rounded-2xl border border-success/25 bg-success/10 px-4 py-3 text-xs leading-relaxed">
+              <BadgeCheck className="h-5 w-5 shrink-0 text-success" />
+              <div>
+                <div className="font-semibold text-foreground">
+                  AMFI-Registered Mutual Fund Distributor
+                </div>
+                <div className="mt-0.5 text-muted-foreground">ARN: 349461</div>
               </div>
-              <div className="mt-0.5 text-muted-foreground">ARN: 349461</div>
             </div>
             <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
               <div className="font-semibold text-foreground">Amit Chadha</div>
@@ -338,21 +364,20 @@ export function SiteFooter() {
             {
               title: "Legal",
               links: [
-                ["Privacy Policy", "#"],
-                ["Terms of Use", "#"],
-                ["Disclosures", "#"],
+                ["Risk Disclaimer", "/disclaimer"],
+                ["Privacy Policy", "/privacy"],
               ],
             },
           ].map((col) => (
             <div key={col.title}>
-              <h2 className="text-sm font-semibold tracking-wide">{col.title}</h2>
+              <h2 className="text-xs font-bold uppercase tracking-[0.18em]">{col.title}</h2>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
                 {col.links.map(([l, h]) => (
                   <li key={l}>
                     <Link
                       href={h as string}
                       prefetch={false}
-                      className="transition-colors hover:text-foreground"
+                      className="inline-flex transition hover:translate-x-0.5 hover:text-primary"
                     >
                       {l}
                     </Link>
@@ -363,12 +388,7 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="mt-12 border-t border-border/60 pt-6 text-xs leading-relaxed text-muted-foreground">
-          <p>
-            Mutual fund investments are subject to market risks. Read all scheme-related documents
-            carefully. Past performance is not indicative of future returns. Insurance, PMS, AIF and
-            NCD products are offered through duly licensed partner intermediaries.
-          </p>
-          <p className="mt-2" suppressHydrationWarning>
+          <p suppressHydrationWarning>
             © {new Date().getFullYear()} WealthMaster India · Mutual Fund Education &amp;
             Distribution Support
           </p>
