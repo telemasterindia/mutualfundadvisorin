@@ -131,9 +131,7 @@ function parseChange(value: number | string | null | undefined) {
 
 function toYahooSymbol(symbol: string) {
   const normalized = normalizeStockSymbol(symbol);
-  return normalized.startsWith("^") || /\.(NS|BO)$/i.test(normalized)
-    ? normalized
-    : `${normalized}.NS`;
+  return /\.(NS|BO)$/i.test(normalized) ? normalized : `${normalized}.NS`;
 }
 
 async function fetchYahooChart(symbol: string, range: string) {
@@ -248,37 +246,12 @@ async function finedgeFetch<T>(
   return payload as T;
 }
 
-async function getYahooIndianMarketSnapshot() {
-  const indices = [
-    { symbol: "NIF50", yahooSymbol: "^NSEI", name: "NIFTY 50" },
-    { symbol: "SNSXSENSEX", yahooSymbol: "^BSESN", name: "SENSEX" },
-    { symbol: "NIFBAN", yahooSymbol: "^NSEBANK", name: "NIFTY BANK" },
-  ];
-  const results = await Promise.allSettled(
-    indices.map(async (index) => {
-      const quote = await getYahooStockOverview(index.yahooSymbol);
-      return {
-        symbol: index.symbol,
-        name: index.name,
-        price: quote.price,
-        change: quote.change ?? 0,
-        changePercent: quote.changePercent ?? 0,
-        currency: "INR",
-      };
-    }),
-  );
-  const quotes = results.flatMap((result) => (result.status === "fulfilled" ? [result.value] : []));
-  if (!quotes.length) throw new Error("Market index data is temporarily unavailable.");
-  return quotes;
-}
-
 export async function getIndianMarketSnapshot() {
-  let payload: FinEdgeIndexQuote[];
-  try {
-    payload = await finedgeFetch<FinEdgeIndexQuote[]>("/index/market-price/daily-feed", {}, 5 * 60);
-  } catch {
-    return getYahooIndianMarketSnapshot();
-  }
+  const payload = await finedgeFetch<FinEdgeIndexQuote[]>(
+    "/index/market-price/daily-feed",
+    {},
+    5 * 60,
+  );
 
   const preferredIndices = [
     "NIF50",
@@ -294,7 +267,7 @@ export async function getIndianMarketSnapshot() {
     (payload ?? []).map((quote) => [quote.index_symbol?.toUpperCase(), quote]),
   );
 
-  const quotes = preferredIndices.flatMap((symbol) => {
+  return preferredIndices.flatMap((symbol) => {
     const quote = quotesBySymbol.get(symbol);
     if (!quote) return [];
 
@@ -314,8 +287,6 @@ export async function getIndianMarketSnapshot() {
       },
     ];
   });
-
-  return quotes.length ? quotes : getYahooIndianMarketSnapshot();
 }
 
 export async function searchFreeStocks(query: string) {
