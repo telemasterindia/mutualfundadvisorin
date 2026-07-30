@@ -1,115 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useTheme } from "@/lib/theme";
 
-type IndexQuote = {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-};
-
-const numberFormatter = new Intl.NumberFormat("en-IN", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-const indexBadges: Record<string, string> = {
-  NIF50: "N50",
-  SNSXSENSEX: "BSE",
-  NIFBAN: "BNK",
-  NIFNEX50: "NX50",
-  NIFMID100: "MID",
-  NIFIT: "IT",
-  NIFAUT: "AUTO",
-  NIFMET: "MET",
-};
+const tickerSymbols = [
+  { proName: "NSE:NIFTY", title: "NIFTY 50" },
+  { proName: "BSE:SENSEX", title: "SENSEX" },
+  { proName: "NSE:BANKNIFTY", title: "NIFTY BANK" },
+  { proName: "NSE:CNXIT", title: "NIFTY IT" },
+  { proName: "NSE:CNXAUTO", title: "NIFTY AUTO" },
+  { proName: "FX_IDC:USDINR", title: "USD / INR" },
+];
 
 export function MarketTicker() {
-  const [quotes, setQuotes] = useState<IndexQuote[]>([]);
-  const [error, setError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
-    const controller = new AbortController();
+    const container = containerRef.current;
+    if (!container) return;
 
-    const loadQuotes = async () => {
-      try {
-        const response = await fetch("/api/market-indices", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
+    container.replaceChildren();
 
-        if (!response.ok) throw new Error("Market data request failed");
+    const widget = document.createElement("div");
+    widget.className = "tradingview-widget-container__widget h-full";
+    container.appendChild(widget);
 
-        const data = (await response.json()) as { quotes: IndexQuote[] };
-        setQuotes(data.quotes);
-        setError(false);
-      } catch (requestError) {
-        if (requestError instanceof DOMException && requestError.name === "AbortError") return;
-        setError(true);
-      }
-    };
-
-    void loadQuotes();
-    const refreshId = window.setInterval(loadQuotes, 5 * 60 * 1000);
+    const script = document.createElement("script");
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
+    script.type = "text/javascript";
+    script.async = true;
+    script.textContent = JSON.stringify({
+      symbols: tickerSymbols,
+      showSymbolLogo: true,
+      isTransparent: true,
+      displayMode: "adaptive",
+      colorTheme: theme,
+      locale: "en",
+    });
+    container.appendChild(script);
 
     return () => {
-      controller.abort();
-      window.clearInterval(refreshId);
+      container.replaceChildren();
     };
-  }, []);
-
-  const renderQuotes = (copy: number) =>
-    quotes.map((quote) => {
-      const positive = quote.change >= 0;
-
-      return (
-        <div
-          key={`${quote.name}-${copy}`}
-          className="flex shrink-0 items-center gap-2 border-r border-border/60 px-4 py-2 text-sm sm:px-6"
-        >
-          <span className="grid h-7 min-w-7 place-items-center rounded-full bg-primary/10 px-1 text-[9px] font-bold text-primary">
-            {indexBadges[quote.symbol] ?? quote.symbol.slice(0, 4)}
-          </span>
-          <span className="whitespace-nowrap font-semibold text-foreground">{quote.name}</span>
-          <span className="num whitespace-nowrap text-foreground">
-            {numberFormatter.format(quote.price)}
-          </span>
-          <span
-            className={`num whitespace-nowrap ${positive ? "text-emerald-600" : "text-rose-500"}`}
-          >
-            {positive ? "+" : ""}
-            {numberFormatter.format(quote.change)} ({positive ? "+" : ""}
-            {quote.changePercent.toFixed(2)}%)
-          </span>
-        </div>
-      );
-    });
+  }, [theme]);
 
   return (
-    <section
-      className="border-t border-border/60 bg-background"
-      aria-label="Delayed market overview"
-    >
-      <div className="market-ticker min-h-[46px] overflow-hidden">
-        {quotes.length > 0 ? (
-          <div
-            className="market-ticker-track flex w-max"
-            style={{ animationDuration: `${Math.max(72, quotes.length * 10)}s` }}
-          >
-            <div className="flex shrink-0">{renderQuotes(1)}</div>
-            <div className="flex shrink-0" aria-hidden="true">
-              {renderQuotes(2)}
-            </div>
-          </div>
-        ) : (
-          <div className="flex min-h-[46px] items-center justify-center">
-            <span className="px-4 py-3 text-xs text-muted-foreground">
-              {error ? "Market data is temporarily unavailable" : "Loading market data..."}
-            </span>
-          </div>
-        )}
+    <section className="border-t border-border/60 bg-background" aria-label="Live market overview">
+      <div
+        ref={containerRef}
+        className="tradingview-widget-container h-[46px] min-h-[46px] overflow-hidden"
+      >
+        <div className="flex h-full items-center justify-center px-4 text-xs text-muted-foreground">
+          Loading live market data...
+        </div>
       </div>
     </section>
   );
