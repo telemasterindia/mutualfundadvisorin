@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   Area,
@@ -52,7 +53,7 @@ const pct = (n: number) => `${Number(n.toFixed(2))}%`;
 const clampFinite = (n: number) => (Number.isFinite(n) ? n : 0);
 
 const calculators = [
-  { id: "persona-advisor", label: "Persona Advisor", icon: Bot },
+  { id: "persona-advisor", label: "Investor Guide", icon: Bot },
   { id: "ppf", label: "PPF", icon: ShieldCheck },
   { id: "hlv", label: "HLV", icon: BriefcaseBusiness },
   { id: "sip", label: "SIP", icon: TrendingUp },
@@ -1205,6 +1206,14 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
             )}
             Request consultation
           </Button>
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
+            By submitting this form, you agree to be contacted regarding your enquiry. Please review
+            our{" "}
+            <Link href="/privacy" className="font-semibold text-primary hover:underline">
+              Privacy Policy
+            </Link>
+            . Do not submit PAN, Aadhaar, passwords, PINs or OTPs through this form.
+          </p>
         </>
       )}
     </form>

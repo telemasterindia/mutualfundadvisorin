@@ -27,9 +27,9 @@ import { MarketTicker } from "@/components/market-ticker";
 const nav = [
   { to: "/", label: "Home" },
   { to: "/funds", label: "Mutual Funds" },
-  { to: "/stocks", label: "Market" },
   { to: "/calculator", label: "Calculators" },
   { to: "/learn", label: "Learn" },
+  { to: "/mutual-fund-distributor-delhi", label: "Delhi Distributor" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
 ];

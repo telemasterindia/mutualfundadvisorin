@@ -54,30 +54,50 @@ const faqs = [
 ];
 
 export default function DelhiDistributorPage() {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "FinancialService",
-    name: "WealthMaster India",
-    url: "https://www.mutualfundadvisor.in/mutual-fund-distributor-delhi",
-    telephone: "+91-9999252122",
-    email: CONTACT.email,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Q-14, Rajouri Garden",
-      addressLocality: "New Delhi",
-      addressRegion: "Delhi",
-      postalCode: "110027",
-      addressCountry: "IN",
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "FinancialService",
+      name: "WealthMaster India",
+      url: "https://www.mutualfundadvisor.in/mutual-fund-distributor-delhi",
+      telephone: "+91-9999252122",
+      email: CONTACT.email,
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Q-14, Rajouri Garden",
+        addressLocality: "New Delhi",
+        addressRegion: "Delhi",
+        postalCode: "110027",
+        addressCountry: "IN",
+      },
+      areaServed: { "@type": "AdministrativeArea", name: "Delhi" },
+      founder: {
+        "@type": "Person",
+        name: "Amit Chadha",
+        jobTitle: "Mutual Fund Distributor",
+        worksFor: { "@type": "Organization", name: "WealthMaster India" },
+      },
+      openingHours: "Mo-Sa 09:00-18:00",
     },
-    areaServed: { "@type": "AdministrativeArea", name: "Delhi" },
-    founder: {
-      "@type": "Person",
-      name: "Amit Chadha",
-      jobTitle: "Mutual Fund Distributor",
-      worksFor: { "@type": "Organization", name: "WealthMaster India" },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://www.mutualfundadvisor.in/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Mutual Fund Distributor Delhi",
+          item: "https://www.mutualfundadvisor.in/mutual-fund-distributor-delhi",
+        },
+      ],
     },
-    openingHours: "Mo-Sa 09:00-18:00",
-  };
+  ];
 
   return (
     <div className="min-h-screen">
@@ -91,6 +111,15 @@ export default function DelhiDistributorPage() {
         />
         <section className="border-b border-border/60 bg-secondary/25">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+            <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted-foreground">
+              <Link href="/" className="hover:text-primary">
+                Home
+              </Link>
+              <span aria-hidden className="mx-2">
+                /
+              </span>
+              <span aria-current="page">Mutual Fund Distributor Delhi</span>
+            </nav>
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
               AMFI-Registered Mutual Fund Distributor | ARN 349461
             </p>
@@ -197,6 +226,14 @@ export default function DelhiDistributorPage() {
               <br />
               {CONTACT.hours}
             </address>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Q-14%2C%20Rajouri%20Garden%2C%20New%20Delhi%20110027"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex font-semibold text-primary hover:underline"
+            >
+              Get directions on Google Maps
+            </a>
             <p className="mt-5 text-sm leading-6 text-muted-foreground">
               We serve investors across {areas.slice(0, -1).join(", ")} and {areas.at(-1)}. Remote
               conversations are also available.

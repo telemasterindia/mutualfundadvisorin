@@ -151,13 +151,12 @@ function Contact() {
               {sent ? "Message sent ✓" : "Send message"}
             </Button>
             <p className="mt-4 text-xs leading-5 text-muted-foreground">
-              By submitting, you consent to WealthMaster India using these details to respond to
-              your enquiry. Do not submit PAN, Aadhaar, passwords, OTPs or account credentials. See
-              our{" "}
+              By submitting this form, you agree to be contacted regarding your enquiry. Please
+              review our{" "}
               <a href="/privacy" className="font-semibold text-primary hover:underline">
                 Privacy Policy
               </a>
-              .
+              . Do not submit PAN, Aadhaar, passwords, PINs or OTPs through this form.
             </p>
           </form>
         </div>

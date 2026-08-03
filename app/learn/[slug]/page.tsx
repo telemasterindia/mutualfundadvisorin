@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = getLearningArticle(slug);
   return article
-    ? { title: `${article.title} | WealthMaster India`, description: article.description }
+    ? {
+        title: `${article.title} | WealthMaster India`,
+        description: article.description,
+        alternates: { canonical: `/learn/${article.slug}` },
+        openGraph: {
+          title: `${article.title} | WealthMaster India`,
+          description: article.description,
+          type: "article",
+          url: `/learn/${article.slug}`,
+        },
+      }
     : {};
 }
 
@@ -26,18 +36,74 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const article = getLearningArticle(slug);
   if (!article) notFound();
+  const canonicalUrl = `https://www.mutualfundadvisor.in/learn/${article.slug}`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      description: article.description,
+      mainEntityOfPage: canonicalUrl,
+      author: {
+        "@type": "Person",
+        name: "Amit Chadha",
+        jobTitle: "Mutual Fund Distributor",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "WealthMaster India",
+        url: "https://www.mutualfundadvisor.in/",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://www.mutualfundadvisor.in/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Learn",
+          item: "https://www.mutualfundadvisor.in/learn",
+        },
+        { "@type": "ListItem", position: 3, name: article.title, item: canonicalUrl },
+      ],
+    },
+  ];
   return (
     <div className="min-h-screen">
       <SiteHeader />
       <main>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
         <article className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-20">
-          <Link
-            href="/learn"
-            className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground"
+          <nav
+            aria-label="Breadcrumb"
+            className="flex flex-wrap items-center text-sm text-muted-foreground"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            All learning resources
-          </Link>
+            <Link href="/" className="hover:text-primary">
+              Home
+            </Link>
+            <span aria-hidden className="mx-2">
+              /
+            </span>
+            <Link href="/learn" className="hover:text-primary">
+              Learn
+            </Link>
+            <span aria-hidden className="mx-2">
+              /
+            </span>
+            <span aria-current="page">{article.title}</span>
+          </nav>
           <div className="mt-9 text-xs font-semibold uppercase tracking-widest text-primary">
             {article.category} · {article.readingTime}
           </div>
@@ -45,6 +111,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {article.title}
           </h1>
           <p className="mt-5 text-lg leading-8 text-muted-foreground">{article.description}</p>
+          <p className="mt-5 text-sm text-muted-foreground">
+            Written by <span className="font-semibold text-foreground">Amit Chadha</span>, Founder
+            &amp; Mutual Fund Distributor at WealthMaster India.
+          </p>
           <div className="mt-10 rounded-2xl border border-warning/25 bg-warning/5 p-5 text-sm leading-6 text-muted-foreground">
             This article is for investor education only. It is not investment advice, a scheme
             recommendation or an assurance of returns.
@@ -76,6 +146,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               Continue learning or book a free conversation about the investment process.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/calculator">
+                <Button variant="outline" className="rounded-full">
+                  Use the SIP calculator
+                </Button>
+              </Link>
+              <Link href="/funds">
+                <Button variant="outline" className="rounded-full">
+                  Explore mutual funds
+                </Button>
+              </Link>
               <Link href="/learn">
                 <Button variant="outline" className="rounded-full">
                   More articles
@@ -87,6 +167,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 </Button>
               </Link>
             </div>
+            <Link
+              href="/mutual-fund-distributor-delhi"
+              className="mt-6 inline-flex text-sm font-semibold text-primary hover:underline"
+            >
+              Mutual Fund Distributor services in Delhi
+            </Link>
           </div>
         </article>
       </main>

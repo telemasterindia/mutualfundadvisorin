@@ -29,6 +29,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "mutualfundadvisor.in" }],
+        destination: "https://www.mutualfundadvisor.in/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

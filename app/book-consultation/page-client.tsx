@@ -317,6 +317,14 @@ function BookConsultation() {
                 )}
                 Confirm consultation
               </Button>
+              <p className="mt-4 text-xs leading-5 text-muted-foreground">
+                By submitting this form, you agree to be contacted regarding your enquiry. Please
+                review our{" "}
+                <Link href="/privacy" className="font-semibold text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+                . Do not submit PAN, Aadhaar, passwords, PINs or OTPs through this form.
+              </p>
             </form>
           )}
         </motion.div>
