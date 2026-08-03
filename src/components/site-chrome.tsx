@@ -286,7 +286,11 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="relative mt-20 overflow-hidden border-t border-border/60 bg-card/80 sm:mt-32">
+    <footer
+      id="site-footer"
+      aria-label="WealthMaster India site footer"
+      className="relative mt-20 overflow-hidden border-t border-border/60 bg-card/80 sm:mt-32"
+    >
       <div className="pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-success/10 blur-3xl" />
       <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
