@@ -4,7 +4,7 @@ import { AuthProvider } from "@/lib/use-auth";
 
 export const metadata: Metadata = {
   title: "Admin CRM - WealthMaster India",
-  description: "Advisor CRM for WealthMaster India leads and consultations.",
+  description: "Internal CRM for WealthMaster India leads and consultations.",
   robots: { index: false, follow: false },
 };
 

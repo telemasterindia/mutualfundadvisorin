@@ -52,6 +52,36 @@ type FinEdgeHistoryPayload = {
   price?: FinEdgeDailyQuote[];
 };
 
+type FinEdgeCompanyProfile = {
+  symbol?: string;
+  name?: string;
+  description?: string;
+  website?: string;
+  industry?: string;
+  sector?: string;
+  macro_sector?: string;
+  sub_industry?: string;
+  market_cap?: number | string | null;
+  nse_code?: string;
+  bse_code?: string;
+};
+
+type FinEdgeFinancialPayload = {
+  symbol?: string;
+  financials?: Array<Record<string, number | string | null>>;
+};
+
+type FinEdgeRatioPayload = {
+  symbol?: string;
+  ratios?: Array<Record<string, number | string | null>>;
+};
+
+type FinEdgeShareholdingSummaryPayload = {
+  symbol?: string;
+  period?: string;
+  summary?: Array<Record<string, number | string | null>>;
+};
+
 type YahooChartResult = {
   meta?: {
     symbol?: string;
@@ -287,6 +317,67 @@ export async function getIndianMarketSnapshot() {
       },
     ];
   });
+}
+
+export async function getStockResearch(symbol: string) {
+  const normalized = normalizeForFinEdgeSymbol(symbol);
+  const requests = await Promise.allSettled([
+    finedgeFetch<FinEdgeCompanyProfile>(
+      `/company-profile/${encodeURIComponent(normalized)}`,
+      {},
+      3600,
+    ),
+    finedgeFetch<FinEdgeFinancialPayload>(
+      `/financials/${encodeURIComponent(normalized)}`,
+      { statement_type: "c", statement_code: "pl", period: "annual" },
+      3600,
+    ),
+    finedgeFetch<FinEdgeFinancialPayload>(
+      `/financials/${encodeURIComponent(normalized)}`,
+      { statement_type: "c", statement_code: "bs", period: "annual" },
+      3600,
+    ),
+    finedgeFetch<FinEdgeFinancialPayload>(
+      `/financials/${encodeURIComponent(normalized)}`,
+      { statement_type: "c", statement_code: "cf", period: "annual" },
+      3600,
+    ),
+    finedgeFetch<FinEdgeRatioPayload>(
+      `/ratios/${encodeURIComponent(normalized)}`,
+      { statement_type: "c", ratio_type: "pr" },
+      3600,
+    ),
+    finedgeFetch<FinEdgeShareholdingSummaryPayload>(
+      `/shareholdings/summary/${encodeURIComponent(normalized)}`,
+      { period: "quarterly" },
+      3600,
+    ),
+  ]);
+
+  const valueAt = <T>(index: number) =>
+    requests[index]?.status === "fulfilled" ? (requests[index].value as T) : null;
+  const profile = valueAt<FinEdgeCompanyProfile>(0);
+  const profitLoss = valueAt<FinEdgeFinancialPayload>(1);
+  const balanceSheet = valueAt<FinEdgeFinancialPayload>(2);
+  const cashFlow = valueAt<FinEdgeFinancialPayload>(3);
+  const ratios = valueAt<FinEdgeRatioPayload>(4);
+  const shareholding = valueAt<FinEdgeShareholdingSummaryPayload>(5);
+
+  const availableSections = requests.filter((request) => request.status === "fulfilled").length;
+  if (!availableSections) throw new Error(`No fundamental data found for ${normalized}.`);
+
+  return {
+    symbol: normalized,
+    profile,
+    financials: {
+      profitLoss: (profitLoss?.financials ?? []).slice(0, 8),
+      balanceSheet: (balanceSheet?.financials ?? []).slice(0, 8),
+      cashFlow: (cashFlow?.financials ?? []).slice(0, 8),
+    },
+    ratios: (ratios?.ratios ?? []).filter((row) => row.header !== "TTM").slice(0, 8),
+    shareholding: (shareholding?.summary ?? []).slice(0, 12),
+    availableSections,
+  };
 }
 
 export async function searchFreeStocks(query: string) {

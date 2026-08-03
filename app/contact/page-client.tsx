@@ -63,8 +63,8 @@ function Contact() {
           Speak with Amit Chadha.
         </h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Founder &amp; Investment Advisor, WealthMaster India — for Mutual Funds, SIPs, Insurance,
-          PMS, AIF and Retirement Planning.
+          Founder &amp; Mutual Fund Distributor, WealthMaster India — for mutual fund distribution,
+          SIP assistance and investor education. ARN 349461.
         </p>
 
         <div className="mt-12 grid gap-8 lg:grid-cols-5">
@@ -73,10 +73,12 @@ function Contact() {
               <Info
                 icon={Phone}
                 title={`Call Amit Chadha: ${CONTACT.phone}`}
-                body="Mon–Sat, 9am–6pm IST"
+                body={CONTACT.hours}
               />
             </a>
-            <Info icon={Mail} title="Email" body={CONTACT.email} />
+            <a href={`mailto:${CONTACT.email}`} className="block">
+              <Info icon={Mail} title="Email" body={CONTACT.email} />
+            </a>
             <a
               href={waLink(
                 "Hi WealthMaster India, I'd like to schedule an investment consultation.",
@@ -148,8 +150,25 @@ function Contact() {
               {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {sent ? "Message sent ✓" : "Send message"}
             </Button>
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">
+              By submitting, you consent to WealthMaster India using these details to respond to
+              your enquiry. Do not submit PAN, Aadhaar, passwords, OTPs or account credentials. See
+              our{" "}
+              <a href="/privacy" className="font-semibold text-primary hover:underline">
+                Privacy Policy
+              </a>
+              .
+            </p>
           </form>
         </div>
+        <p className="mt-10 text-center text-sm">
+          <a
+            href="/mutual-fund-distributor-delhi"
+            className="font-semibold text-primary hover:underline"
+          >
+            Learn about our Mutual Fund Distributor services in Delhi
+          </a>
+        </p>
       </div>
       <SiteFooter />
     </div>

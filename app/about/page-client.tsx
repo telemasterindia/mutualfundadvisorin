@@ -25,7 +25,7 @@ export default function Page() {
             About us
           </div>
           <h1 className="mt-3 max-w-4xl font-display text-4xl font-bold leading-tight sm:text-5xl">
-            Helping investors understand mutual funds and make informed decisions.
+            About WealthMaster India
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
             WealthMaster India helps individuals understand mutual funds, plan for financial goals
@@ -36,10 +36,7 @@ export default function Page() {
             <InfoCard title="Who we are" icon={ShieldCheck}>
               <dl className="space-y-4 text-sm">
                 <Row label="Brand name" value="WealthMaster India" />
-                <Row label="Legal entity name" value="To be confirmed" pending />
-                <Row label="Year established" value="To be confirmed" pending />
                 <Row label="Office location" value={CONTACT.address} />
-                <Row label="Customers served" value="To be confirmed" pending />
                 <Row label="Registration" value="AMFI-Registered Mutual Fund Distributor" />
                 <Row label="ARN" value="349461" />
               </dl>
@@ -55,9 +52,19 @@ export default function Page() {
                 ))}
               </ul>
               <p className="mt-6 text-sm leading-6 text-muted-foreground">
-                Our role is to explain options and assist with the investment process. Mutual fund
-                investments remain subject to market risk.
+                WealthMaster India acts as an AMFI-Registered Mutual Fund Distributor and deals in
+                Regular Plans of mutual fund schemes. We are not a SEBI-registered Investment
+                Adviser. Mutual fund investments are subject to market risks. Read all
+                scheme-related documents carefully.
               </p>
+              <a
+                href="https://www.amfiindia.com/locate-distributor"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline"
+              >
+                Verify a distributor with AMFI
+              </a>
             </InfoCard>
           </div>
 
@@ -90,6 +97,14 @@ export default function Page() {
                 Book free consultation <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
+            <p className="mt-5 text-sm">
+              <Link
+                href="/mutual-fund-distributor-delhi"
+                className="font-semibold text-primary hover:underline"
+              >
+                Learn about our Mutual Fund Distributor services in Delhi
+              </Link>
+            </p>
           </div>
         </section>
       </main>

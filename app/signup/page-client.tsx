@@ -92,7 +92,7 @@ function SignupPage() {
   return (
     <AuthShell
       title="Start your wealth journey"
-      subtitle="Personalized advisory · Goal-based investing · Long-term wealth"
+      subtitle="Investor education · Mutual fund distribution · SIP assistance"
       footer={
         <>
           Already have an account?{" "}

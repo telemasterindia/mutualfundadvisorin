@@ -15,7 +15,7 @@ export function FloatingContact() {
           <div>
             <div className="text-sm font-semibold">Speak with Amit Chadha</div>
             <div className="text-[11px] text-muted-foreground">
-              Founder &amp; Investment Advisor · Mon–Sat
+              Founder &amp; Mutual Fund Distributor · Mon–Sat
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@ export function FloatingContact() {
             </div>
           </a>
           <a
-            href={mailLink("Mutual fund advisory enquiry")}
+            href={mailLink("Mutual fund distribution enquiry")}
             className="flex items-center gap-3 rounded-2xl border border-border/60 bg-secondary/40 p-3 text-sm transition hover:border-primary/40 hover:bg-primary/5"
           >
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/15 text-primary">
@@ -62,7 +62,7 @@ export function FloatingContact() {
       </div>
 
       <summary
-        aria-label="Contact advisor"
+        aria-label="Contact our mutual fund distribution team"
         className="relative ml-auto grid h-14 w-14 cursor-pointer list-none place-items-center rounded-full bg-success text-white shadow-elegant transition hover:scale-105 [&::-webkit-details-marker]:hidden"
         style={{ boxShadow: "0 18px 40px -12px rgb(34 197 94 / 0.5)" }}
       >

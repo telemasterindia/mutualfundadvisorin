@@ -1,4 +1,4 @@
-import { fallbackDashboardData, type DashboardNewsItem } from "@/lib/advisor-data";
+import type { DashboardNewsItem } from "@/lib/advisor-data";
 
 export type MarketNewsResponse = {
   source: string;
@@ -18,6 +18,17 @@ type MarketAuxArticle = {
   url?: string;
   source?: string;
   published_at?: string;
+};
+
+type FinEdgeAnnouncement = {
+  stock_symbol?: string;
+  nse_code?: string;
+  category?: string;
+  description?: string;
+  announcement_date?: string;
+  timestamp_unix?: number;
+  pdf_file_link?: string;
+  pdf_file_link_hist?: string;
 };
 
 const NEWS_QUERY =
@@ -43,8 +54,69 @@ function fallbackNews(source = "Fallback"): MarketNewsResponse {
   return {
     source,
     configured: false,
-    news: fallbackDashboardData.news,
+    news: [],
   };
+}
+
+function formatDate(value: Date) {
+  return value.toISOString().slice(0, 10);
+}
+
+async function fetchFinEdgeAnnouncements(apiKey: string): Promise<MarketNewsResponse> {
+  const toDate = new Date();
+  const fromDate = new Date(toDate);
+  fromDate.setUTCDate(fromDate.getUTCDate() - 14);
+  const symbols = ["RELIANCE", "HDFCBANK", "ITC", "TCS", "INFY"];
+
+  const responses = await Promise.allSettled(
+    symbols.map(async (symbol) => {
+      const params = new URLSearchParams({
+        symbol,
+        from_date: formatDate(fromDate),
+        to_date: formatDate(toDate),
+        token: apiKey,
+      });
+      const response = await fetch(
+        `https://data.finedgeapi.com/api/v1/corp-announcements?${params.toString()}`,
+        {
+          headers: { Accept: "application/json" },
+          next: { revalidate: 10 * 60 },
+        },
+      );
+      if (!response.ok) throw new Error(`FinEdge announcements failed with ${response.status}`);
+      return (await response.json()) as FinEdgeAnnouncement[];
+    }),
+  );
+
+  const news = responses
+    .flatMap((response) => (response.status === "fulfilled" ? response.value : []))
+    .map((announcement) => {
+      const publishedTime =
+        announcement.timestamp_unix && Number.isFinite(announcement.timestamp_unix)
+          ? announcement.timestamp_unix * 1000
+          : new Date(announcement.announcement_date ?? "").getTime();
+      const symbol = announcement.nse_code ?? announcement.stock_symbol ?? "NSE";
+      return {
+        title: announcement.description?.trim() ?? "",
+        source: `${symbol} · ${announcement.category ?? "Corporate announcement"}`,
+        time: relativeTime(
+          Number.isFinite(publishedTime) ? new Date(publishedTime).toISOString() : undefined,
+        ),
+        url: announcement.pdf_file_link || announcement.pdf_file_link_hist,
+        publishedTime,
+      };
+    })
+    .filter(
+      (announcement) =>
+        announcement.title && announcement.url && Number.isFinite(announcement.publishedTime),
+    )
+    .sort((a, b) => b.publishedTime - a.publishedTime)
+    .slice(0, 6)
+    .map(({ publishedTime: _, ...announcement }) => announcement);
+
+  return news.length
+    ? { source: "FinEdge corporate announcements", configured: true, news }
+    : fallbackNews("FinEdge announcements");
 }
 
 async function fetchNewsApi(apiKey: string): Promise<MarketNewsResponse> {
@@ -113,13 +185,30 @@ async function fetchMarketAux(apiKey: string): Promise<MarketNewsResponse> {
 export async function getMarketNews(): Promise<MarketNewsResponse> {
   const provider = (process.env.MARKET_NEWS_PROVIDER ?? "newsapi").toLowerCase();
   const apiKey = process.env.MARKET_NEWS_API_KEY ?? process.env.NEWS_API_KEY;
+  const finEdgeApiKey = process.env.FINEDGE_API_KEY;
 
-  if (!apiKey) return fallbackNews();
+  if (!apiKey) {
+    if (!finEdgeApiKey) return fallbackNews("Market updates unavailable");
+    try {
+      return await fetchFinEdgeAnnouncements(finEdgeApiKey);
+    } catch {
+      return fallbackNews("FinEdge announcements unavailable");
+    }
+  }
 
   try {
     if (provider === "marketaux") return fetchMarketAux(apiKey);
     return fetchNewsApi(apiKey);
   } catch {
-    return fallbackNews(provider === "marketaux" ? "MarketAux fallback" : "NewsAPI fallback");
+    if (!finEdgeApiKey) {
+      return fallbackNews(
+        provider === "marketaux" ? "MarketAux unavailable" : "NewsAPI unavailable",
+      );
+    }
+    try {
+      return await fetchFinEdgeAnnouncements(finEdgeApiKey);
+    } catch {
+      return fallbackNews("News providers unavailable");
+    }
   }
 }

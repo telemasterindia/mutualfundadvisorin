@@ -30,23 +30,40 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "FinancialService",
-    name: "WealthMaster India",
-    description:
-      "Mutual fund education, planning tools and distribution support for Indian investors.",
-    url: SITE_URL,
-    areaServed: "IN",
-    serviceType: "Mutual Fund Education and Distribution Support",
-    telephone: "+91-9999252122",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Q-14, Rajouri Garden",
-      addressLocality: "New Delhi",
-      addressRegion: "DL",
-      postalCode: "110027",
-      addressCountry: "IN",
-    },
-    founder: { "@type": "Person", name: "Amit Chadha", jobTitle: "Founder" },
+    "@graph": [
+      {
+        "@type": ["Organization", "FinancialService"],
+        "@id": `${SITE_URL}/#organization`,
+        name: "WealthMaster India",
+        description:
+          "AMFI-Registered Mutual Fund Distributor providing mutual fund education and distribution support. ARN 349461.",
+        url: SITE_URL,
+        areaServed: { "@type": "AdministrativeArea", name: "Delhi" },
+        serviceType: "Mutual Fund Distribution",
+        telephone: "+91-9999252122",
+        email: "contact@wealthmasterindia.in",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Q-14, Rajouri Garden",
+          addressLocality: "New Delhi",
+          addressRegion: "Delhi",
+          postalCode: "110027",
+          addressCountry: "IN",
+        },
+        founder: {
+          "@type": "Person",
+          name: "Amit Chadha",
+          jobTitle: "Mutual Fund Distributor",
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "WealthMaster India",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+    ],
   };
   const structuredDataJson = JSON.stringify(structuredData).replace(/</g, "\\u003c");
 

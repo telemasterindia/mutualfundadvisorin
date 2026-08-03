@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { learningArticles } from "@/lib/learning";
 
 export const metadata: Metadata = {
-  title: "Learn About Mutual Funds | WealthMaster India",
+  title: "Learn About Mutual Funds, SIPs and Risk | WealthMaster India",
   description:
-    "Plain-language educational resources about mutual funds, SIPs, lump-sum investing, plan types, costs and risks.",
+    "Beginner-friendly guides about mutual funds, SIPs, costs, risk, Direct and Regular Plans, diversification and investor behaviour.",
+  alternates: { canonical: "/learn" },
 };
 
 export default function LearnPage() {
@@ -22,7 +23,7 @@ export default function LearnPage() {
               Learning resources
             </div>
             <h1 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
-              Understand the basics before taking the next step.
+              Learn About Mutual Funds
             </h1>
             <p className="mt-5 text-lg leading-8 text-muted-foreground">
               Unbiased, plain-language introductions to mutual fund concepts, investment routes,

@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { Search, TrendingDown, TrendingUp } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { StockResearch } from "@/components/stock-research";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -250,6 +251,7 @@ export default function StocksPage() {
               ["Market Movers", "#movers"],
               ["Market News", "#news"],
               ["Stock Search", "#stock-search"],
+              ["Fundamentals", "#fundamentals"],
             ].map(([item, href], index) => (
               <a
                 key={item}
@@ -441,7 +443,7 @@ export default function StocksPage() {
               <div className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
                 Latest updates
               </div>
-              <h2 className="mt-1 text-xl font-bold">Market news</h2>
+              <h2 className="mt-1 text-xl font-bold">Market news &amp; filings</h2>
               <div className="mt-4 divide-y">
                 {marketNews.slice(0, 6).map((item) => (
                   <a
@@ -667,12 +669,13 @@ export default function StocksPage() {
                 ))}
               </dl>
               <p className="mt-5 text-xs leading-5 text-muted-foreground">
-                Powered by free Yahoo Finance market data. Data may be delayed and is provided for
-                education only; it is not investment advice.
+                Powered by FinEdge API with a fallback market-data source. Data may be delayed and
+                is provided for education only; it is not investment advice.
               </p>
             </aside>
           </div>
         )}
+        {!loading && overview && <StockResearch symbol={symbol} />}
       </main>
       <SiteFooter />
     </div>

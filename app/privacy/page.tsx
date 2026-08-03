@@ -6,7 +6,8 @@ import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 export const metadata: Metadata = {
   title: "Privacy Policy | WealthMaster India",
   description:
-    "Learn how WealthMaster India collects, uses, stores and protects personal information.",
+    "Learn how WealthMaster India collects, uses, stores and protects information submitted through its website and consultation forms.",
+  alternates: { canonical: "/privacy" },
 };
 
 const sections = [

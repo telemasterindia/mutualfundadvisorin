@@ -4,7 +4,8 @@ import ClientPage from "./page-client";
 export const metadata: Metadata = {
   title: "Book Consultation - WealthMaster India",
   description:
-    "Book a consultation with Amit Chadha for mutual fund advisory, SIP planning and portfolio review.",
+    "Book a consultation with Amit Chadha for mutual fund distribution support, SIP assistance and investor education.",
+  alternates: { canonical: "/book-consultation" },
 };
 
 export default function Page() {

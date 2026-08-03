@@ -4,9 +4,10 @@ import { BadgeCheck, FileWarning, Scale } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 
 export const metadata: Metadata = {
-  title: "Risk Disclaimer & Disclosures | WealthMaster India",
+  title: "Risk Disclaimer and Disclosures | WealthMaster India",
   description:
     "Important mutual fund risk, distributor role, performance, cost, commission and website disclosures.",
+  alternates: { canonical: "/disclaimer" },
 };
 
 const disclosures = [

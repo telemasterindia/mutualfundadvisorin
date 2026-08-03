@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 
 const DISCLAIMER =
-  "Mutual fund investments are subject to market risk. This is general guidance based on the details you've shared, not personalized investment advice. Please consult with our advisor before investing.";
+  "Mutual fund investments are subject to market risk. This is general educational guidance based on the details you've shared, not individualized investment advice. Evaluate suitability and read all scheme-related documents before investing.";
 
 type GoalOption = readonly [value: string, label: string];
 type GoalGroup = { label: string; goals: readonly GoalOption[] };
@@ -989,8 +989,7 @@ export function PersonaGuide() {
               <section>
                 <h3 className="font-display text-base font-bold">Next Step</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Talk to our advisor for a personalized, scheme-level recommendation based on your
-                  complete circumstances.
+                  Talk to our team for distribution support based on your complete circumstances.
                 </p>
                 <Button asChild className="mt-3 w-full rounded-full">
                   <Link href="/book-consultation">Book free consultation</Link>

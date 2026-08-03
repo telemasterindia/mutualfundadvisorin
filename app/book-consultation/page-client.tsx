@@ -155,7 +155,7 @@ function BookConsultation() {
             <CalendarDays className="h-3.5 w-3.5 text-primary" /> Free 30-minute consultation
           </div>
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            Book a session with a <span className="gradient-text">senior advisor</span>
+            Book a session with our <span className="gradient-text">distribution team</span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
             Pick a slot that works for you. We'll send a confirmation with the meeting link or call
@@ -296,7 +296,7 @@ function BookConsultation() {
                 </Select>
               </Field>
 
-              <Field label="Notes for the advisor (optional)" error={errors.message}>
+              <Field label="Notes for our team (optional)" error={errors.message}>
                 <Textarea
                   rows={3}
                   maxLength={800}

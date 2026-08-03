@@ -95,34 +95,41 @@ function Hero() {
         <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">
-              Mutual fund education and distribution support
+              AMFI-Registered Mutual Fund Distributor | ARN 349461
             </div>
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight tracking-tight sm:text-6xl">
-              Understand mutual funds before you <span className="gradient-text">invest.</span>
+              AMFI-Registered Mutual Fund Distributor in Delhi
             </h1>
             <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Learn the basics, calculate your goals and explore your options—with guidance when you
-              need it.
+              WealthMaster India provides mutual fund distribution, SIP assistance and investor
+              education from Rajouri Garden, New Delhi. Understand available options, risks, costs
+              and the investment process before you proceed.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/learn">
-                <Button size="lg" variant="outline" className="h-12 rounded-full px-6">
-                  Start learning
-                </Button>
-              </Link>
               <Link href="/book-consultation">
                 <Button
                   size="lg"
                   className="h-12 rounded-full px-6 gradient-bg text-primary-foreground shadow-glow"
                 >
-                  Book free consultation <ArrowRight className="ml-2 h-4 w-4" />
+                  Book a Free Consultation <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/funds">
+                <Button size="lg" variant="outline" className="h-12 rounded-full px-6">
+                  Explore Mutual Funds
                 </Button>
               </Link>
             </div>
             <p className="mt-5 max-w-xl text-xs text-muted-foreground">
               Mutual fund investments are subject to market risks. Read all scheme-related documents
-              carefully.
+              carefully. We deal in Regular Plans and may receive commission from AMCs.
             </p>
+            <Link
+              href="/mutual-fund-distributor-delhi"
+              className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline"
+            >
+              Learn about our Mutual Fund Distributor services in Delhi
+            </Link>
           </div>
           <HeroVisual />
         </div>

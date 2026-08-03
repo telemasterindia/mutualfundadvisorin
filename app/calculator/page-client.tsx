@@ -144,7 +144,7 @@ function FinancialCalculators() {
           <div className="rounded-2xl border border-primary/25 bg-card p-4 shadow-soft">
             <div className="flex items-center gap-2 text-sm font-semibold text-primary">
               <ShieldCheck className="h-4 w-4" />
-              SEBI-aligned investor safety
+              Investor-safety information
             </div>
             <p className="mt-2 text-xs leading-5 text-muted-foreground">
               These tools are educational estimates, not assured returns or investment advice. Users
@@ -1109,7 +1109,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
             {sent
-              ? "We saved your calculator result and contact details. The advisory team will call you with the next steps."
+              ? "We saved your calculator result and contact details. Our team will call you with the next steps."
               : "Share your details and Amit Chadha's team will help you turn this estimate into an actionable investment plan."}
           </p>
         </div>
@@ -1142,7 +1142,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
             </a>
             <a href="/contact">
               <Button type="button" variant="outline" className="rounded-full">
-                Contact advisor
+                Contact our team
               </Button>
             </a>
           </div>
@@ -1182,7 +1182,7 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
           </div>
 
           <div className="mt-4">
-            <Field label="Notes for advisor" error={errors.message}>
+            <Field label="Notes for our team" error={errors.message}>
               <Textarea
                 rows={3}
                 value={form.message}

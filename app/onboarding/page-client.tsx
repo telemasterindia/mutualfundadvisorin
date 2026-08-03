@@ -96,7 +96,7 @@ function Onboarding() {
     setSubmitting(false);
     if (profileRes.error) return toast.error(profileRes.error.message);
     if (leadRes.error) console.warn(leadRes.error);
-    toast.success("Welcome aboard! Your advisor will reach out shortly.");
+    toast.success("Welcome aboard! Our team will reach out shortly.");
     router.push("/dashboard");
   };
 
@@ -277,7 +277,7 @@ function Onboarding() {
                 <div className="space-y-4">
                   <Header
                     title="Almost done"
-                    sub="Review and submit. An advisor will reach out within 24 hours."
+                    sub="Review and submit. Our team will reach out within 24 hours."
                   />
                   <div className="rounded-2xl border border-border/70 bg-secondary/30 p-4">
                     <div className="grid grid-cols-2 gap-3 text-sm">

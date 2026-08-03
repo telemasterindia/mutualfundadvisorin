@@ -1,8 +1,8 @@
 # WealthMaster India
 
-> Independent financial services and wealth advisory platform focused on Mutual Funds, SIPs, Retirement Planning, Insurance, PMS, AIF, NCDs and long-term wealth creation for Indian investors.
+> AMFI-Registered Mutual Fund Distributor in Rajouri Garden, New Delhi. ARN 349461.
 
-WealthMaster India is led by Amit Chadha (Founder & Investment Advisor) and provides personalized SIP planning, goal-based portfolio construction, insurance review and alternate investments (PMS, AIF, NCDs) for retail investors and HNIs.
+WealthMaster India is led by Amit Chadha (Founder & Mutual Fund Distributor) and provides mutual fund distribution, SIP assistance and investor education. It deals in Regular Plans and may receive commission from AMCs. WealthMaster India is not a SEBI-registered Investment Adviser.
 
 ## Pages
 
@@ -10,7 +10,7 @@ WealthMaster India is led by Amit Chadha (Founder & Investment Advisor) and prov
 - [About](/about): Mission, principles, and team behind WealthMaster India.
 - [Explore Funds](/funds): Curated mutual funds across equity, debt, hybrid and ELSS categories.
 - [SIP Calculator](/calculator): Estimate the future value of monthly SIP investments.
-- [Get Started](/get-started): Request a personalized advisory consultation.
+- [Get Started](/get-started): Request a consultation about mutual fund distribution support.
 - [Book Consultation](/book-consultation): Schedule an investment consultation with Amit Chadha.
 - [Contact](/contact): Call, email, WhatsApp or visit the New Delhi office.
 

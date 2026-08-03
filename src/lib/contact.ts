@@ -1,6 +1,6 @@
 export const CONTACT = {
   name: "Amit Chadha",
-  title: "Founder & Investment Advisor",
+  title: "Founder & Mutual Fund Distributor",
   company: "WealthMaster India",
   whatsapp: "919999252122", // E.164 without "+" for wa.me
   whatsappDisplay: "+91 99992 52122",
@@ -9,6 +9,7 @@ export const CONTACT = {
   phoneRaw: "9999252122",
   telHref: "tel:+919999252122",
   address: "Q-14, Rajouri Garden, New Delhi-110027",
+  hours: "Monday-Saturday, 9:00 AM-6:00 PM IST",
 };
 
 export const waLink = (msg: string) =>

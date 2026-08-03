@@ -86,7 +86,7 @@ function GetStarted() {
       return;
     }
     setDone(true);
-    toast.success("Request received. Our advisor will reach out within 24 hours.");
+    toast.success("Request received. Our team will reach out within 24 hours.");
   };
 
   return (
@@ -101,21 +101,21 @@ function GetStarted() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 px-3 py-1 text-xs">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="font-medium">Personalized advisory</span>
+              <span className="font-medium">Mutual fund distribution support</span>
             </div>
             <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-              Start your <span className="gradient-text">wealth journey</span> with an expert
+              Start with a <span className="gradient-text">clear conversation</span>
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Share a few details and a SEBI-aligned, advisor will craft a personalized SIP &
-              portfolio plan for you.
+              Share a few details and our team will help you understand SIPs, mutual fund options,
+              costs and the investment process.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               {[
-                "Free 1-on-1 consultation with a senior advisor",
-                "Personalized goal-based SIP plan",
-                "Curated portfolio of 4-star+ rated funds",
-                "Quarterly review & rebalancing support",
+                "Free 1-on-1 consultation with our distribution team",
+                "Goal-based educational support",
+                "Clear explanation of costs and risks",
+                "Regular Plan commission disclosure",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
@@ -143,8 +143,8 @@ function GetStarted() {
                   </div>
                   <h2 className="mt-5 font-display text-2xl font-bold">You're on the list</h2>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    A WealthMaster India advisor will reach out within 24 hours on the number you
-                    provided.
+                    A WealthMaster India team member will reach out within 24 hours on the number
+                    you provided.
                   </p>
                   <div className="mt-6 flex justify-center gap-2">
                     <Link href="/book-consultation">

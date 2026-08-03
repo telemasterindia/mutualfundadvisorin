@@ -331,7 +331,7 @@ export function SiteFooter() {
             </div>
             <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
               <div className="font-semibold text-foreground">Amit Chadha</div>
-              <div className="text-xs">Founder &amp; Investment Advisor</div>
+              <div className="text-xs">Founder &amp; Mutual Fund Distributor</div>
               <a href="tel:+919999252122" className="block transition-colors hover:text-foreground">
                 +91 99992 52122
               </a>
@@ -357,6 +357,7 @@ export function SiteFooter() {
               title: "Company",
               links: [
                 ["About", "/about"],
+                ["Delhi Distributor", "/mutual-fund-distributor-delhi"],
                 ["Contact", "/contact"],
                 ["Book Consultation", "/book-consultation"],
               ],
