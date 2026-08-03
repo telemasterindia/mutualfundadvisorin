@@ -184,7 +184,10 @@ function FinancialCalculators() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <nav
+          aria-label="Choose a financial calculator"
+          className="mt-8 grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        >
           {calculators.map((item) => {
             const Icon = item.icon;
             const selected = active === item.id;
@@ -204,7 +207,7 @@ function FinancialCalculators() {
               </button>
             );
           })}
-        </div>
+        </nav>
 
         <div className="mt-8">
           {active === "persona-advisor" && <PersonaGuide />}
