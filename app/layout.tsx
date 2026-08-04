@@ -6,23 +6,23 @@ import { FloatingContact } from "@/components/floating-contact";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mutualfundadvisor.in";
 
 export const metadata: Metadata = {
-  title: "WealthMaster India - Mutual Fund Education & Distribution Support",
+  title: "Mutual Fund Distributor in Delhi | WealthMaster India",
   description:
-    "Learn about mutual funds, use transparent planning calculators and book a free consultation about the investment process.",
+    "Connect with WealthMaster India, an AMFI-registered Mutual Fund Distributor in Rajouri Garden, Delhi. Explore SIPs, mutual funds and Regular Plan assistance. ARN 349461.",
   metadataBase: new URL(SITE_URL),
   openGraph: {
     siteName: "WealthMaster India",
     type: "website",
-    title: "WealthMaster India - Mutual Fund Education & Distribution Support",
+    title: "Mutual Fund Distributor in Delhi | WealthMaster India",
     description:
-      "Mutual fund education, planning calculators and distribution support for Indian investors.",
+      "Explore mutual funds, SIP calculators and investor education, or request a consultation with an AMFI-registered Mutual Fund Distributor in Delhi.",
     images: ["/icon.svg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WealthMaster India - Mutual Fund Education & Distribution Support",
+    title: "Mutual Fund Distributor in Delhi | WealthMaster India",
     description:
-      "Mutual fund education, planning calculators and distribution support for Indian investors.",
+      "Explore mutual funds, SIP calculators and investor education, or request a consultation with an AMFI-registered Mutual Fund Distributor in Delhi.",
     images: ["/icon.svg"],
   },
 };

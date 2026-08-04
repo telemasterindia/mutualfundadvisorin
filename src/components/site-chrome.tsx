@@ -322,7 +322,8 @@ export function SiteFooter() {
               WealthMaster India
             </div>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Mutual fund education, planning tools and distribution support for Indian investors.
+              WealthMaster India provides mutual fund education, planning tools and distribution
+              support through an AMFI-registered Mutual Fund Distributor in Delhi.
             </p>
             <div className="mt-4 flex items-center gap-3 rounded-2xl border border-success/25 bg-success/10 px-4 py-3 text-xs leading-relaxed">
               <BadgeCheck className="h-5 w-5 shrink-0 text-success" />

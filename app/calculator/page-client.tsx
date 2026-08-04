@@ -127,7 +127,7 @@ function FinancialCalculators() {
               <Calculator className="h-3.5 w-3.5" /> Financial planning tools
             </div>
             <h1 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-5xl">
-              Financial Calculators
+              SIP and Financial Calculators
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
               Estimate SIP growth, goal funding, loan EMI, retirement corpus and net worth using
@@ -196,6 +196,8 @@ function FinancialCalculators() {
                 key={item.id}
                 type="button"
                 onClick={() => setActive(item.id)}
+                aria-pressed={selected}
+                aria-controls="active-calculator"
                 className={`flex h-14 items-center gap-3 rounded-2xl border px-4 text-left text-sm font-semibold transition ${
                   selected
                     ? "border-primary bg-primary/10 text-primary shadow-soft"
@@ -209,7 +211,7 @@ function FinancialCalculators() {
           })}
         </nav>
 
-        <div className="mt-8">
+        <div id="active-calculator" className="mt-8" aria-live="polite">
           {active === "persona-advisor" && <PersonaGuide />}
           {active === "ppf" && <SavingsGrowthCalculator kind="ppf" />}
           {active === "hlv" && <HlvCalculator />}

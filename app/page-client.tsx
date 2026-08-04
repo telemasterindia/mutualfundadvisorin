@@ -354,18 +354,24 @@ function FinalCTA() {
   return (
     <section className="mx-auto max-w-5xl px-4 pb-10 sm:px-6">
       <div className="rounded-3xl gradient-bg p-8 text-center text-primary-foreground sm:p-12">
-        <h2 className="font-display text-3xl font-bold">
-          Ready to discuss your mutual fund questions?
-        </h2>
+        <h2 className="font-display text-3xl font-bold">Request a mutual fund consultation</h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm opacity-85">
-          Book a free, confidential consultation. No guaranteed-return claims and no obligation to
-          invest.
+          Share your basic contact details and mutual fund questions. Our distribution team will
+          contact you to explain the available process, Regular Plan costs, applicable commissions
+          and relevant risks. Submitting the form does not create an obligation to invest.
         </p>
         <Link href="/book-consultation">
           <Button size="lg" variant="secondary" className="mt-7 rounded-full">
             Book free consultation <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
+        <p className="mx-auto mt-5 max-w-2xl text-xs leading-5 opacity-85">
+          By submitting the form, you agree to be contacted regarding your enquiry. Review our{" "}
+          <Link href="/privacy" className="font-semibold underline underline-offset-2">
+            Privacy Policy
+          </Link>
+          . Do not submit PAN, Aadhaar, passwords, PINs or OTPs through the form.
+        </p>
       </div>
     </section>
   );
