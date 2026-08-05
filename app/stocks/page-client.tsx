@@ -674,25 +674,14 @@ export default function StocksPage() {
                 ))}
               </dl>
               <p className="mt-5 text-xs leading-5 text-muted-foreground">
-                Powered by FinEdge API with a fallback market-data source. Data may be delayed and
-                is provided for education only; it is not investment advice.
+                Company fields depend on provider availability and may be incomplete.
               </p>
             </aside>
           </div>
         )}
         {!loading && overview && <StockResearch symbol={symbol} />}
         <section className="mt-8 rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-display text-xl font-bold">Market-data disclaimer</h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Market information is provided for general educational purposes only and may be delayed,
-            incomplete or subject to revision. It does not constitute investment advice, research, a
-            recommendation, or an invitation to buy or sell securities. Verify information with the
-            relevant exchange, issuer or authorized data provider before making any decision.
-          </p>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Source: FinEdge API · Latest available delayed data · Times are displayed in IST where
-            provided.
-          </p>
+          <h2 className="font-display text-xl font-bold">Continue exploring</h2>
           <nav aria-label="Related resources" className="mt-5 flex flex-wrap gap-4 text-sm">
             <Link href="/funds" className="font-semibold text-primary underline">
               Explore mutual funds

@@ -306,14 +306,15 @@ export async function getIndianMarketSnapshot() {
     const price = toNumber(quote.close_price);
     const change = parseChange(quote.points_change);
     const changePercent = toPercent(quote.change_pct);
+    if (price === null || change === null || changePercent === null) return [];
 
     return [
       {
         symbol: quote.index_symbol ?? symbol,
         name,
-        price: price ?? 0,
-        change: change ?? 0,
-        changePercent: changePercent ?? 0,
+        price,
+        change,
+        changePercent,
         currency: "INR",
       },
     ];

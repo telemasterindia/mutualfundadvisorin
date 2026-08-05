@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
+import { MarketDataNotice } from "@/components/market-data-notice";
 import { Button } from "@/components/ui/button";
 
 type IndexQuote = {
@@ -22,16 +23,6 @@ type MarketPayload = {
 const numberFormatter = new Intl.NumberFormat("en-IN", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
-});
-
-const timeFormatter = new Intl.DateTimeFormat("en-IN", {
-  day: "2-digit",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: "Asia/Kolkata",
-  timeZoneName: "short",
 });
 
 const indexBadges: Record<string, string> = {
@@ -164,22 +155,14 @@ export function MarketTicker({ showOverviewLink = true }: { showOverviewLink?: b
           {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
         </Button>
       </div>
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-[11px] leading-5 text-muted-foreground sm:px-6 lg:px-8">
-        <p>
-          Market data may be delayed. Information is for general educational purposes—not investment
-          advice or a buy/sell recommendation.
-        </p>
-        <p>
-          Source: {source}
-          {updatedAt
-            ? ` · Last successful update: ${timeFormatter.format(new Date(updatedAt))}`
-            : ""}
-          {stale ? " · Showing latest successfully retrieved data" : ""}
-        </p>
+      <div className="border-t border-border/40">
+        <MarketDataNotice source={source} refreshedAt={updatedAt} stale={stale} />
         {showOverviewLink && (
-          <Link href="/stocks" className="font-semibold text-primary underline underline-offset-2">
-            View market overview
-          </Link>
+          <div className="mx-auto max-w-7xl px-4 pb-2 text-right sm:px-6 lg:px-8">
+            <Link href="/stocks" className="text-xs font-semibold text-primary underline">
+              View market overview
+            </Link>
+          </div>
         )}
       </div>
     </section>
