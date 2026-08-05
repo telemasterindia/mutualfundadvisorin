@@ -6,7 +6,13 @@ export async function GET() {
     const quotes = await getIndianMarketSnapshot();
 
     return NextResponse.json(
-      { quotes, delayed: true },
+      {
+        quotes,
+        source: "FinEdge API",
+        delayed: true,
+        updatedAt: new Date().toISOString(),
+        timeZone: "Asia/Kolkata",
+      },
       {
         headers: {
           "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
@@ -14,8 +20,9 @@ export async function GET() {
       },
     );
   } catch (error) {
+    console.error("Market index request failed", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unable to load market indices" },
+      { error: "Market data is temporarily unavailable. Please try again later." },
       { status: 502 },
     );
   }

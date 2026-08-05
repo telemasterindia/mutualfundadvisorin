@@ -11,6 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import { Search, TrendingDown, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { MarketTicker } from "@/components/market-ticker";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { StockResearch } from "@/components/stock-research";
 import { Button } from "@/components/ui/button";
@@ -228,10 +230,12 @@ export default function StocksPage() {
                 India markets
               </div>
               <h1 className="mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                Markets today
+                Indian Market Overview
               </h1>
               <p className="mt-2 max-w-xl text-sm text-slate-300">
-                Indices, market movers, breaking updates and stock research in one place.
+                Explore delayed Indian market information, major indices and listed-company data for
+                general educational purposes. Verify information with the relevant exchange or an
+                authorized data provider.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 backdrop-blur">
@@ -268,13 +272,14 @@ export default function StocksPage() {
           </div>
         </div>
       </div>
+      <MarketTicker showOverviewLink={false} />
       <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         {marketQuotes.length > 0 && (
           <section id="indices" className="mb-5 scroll-mt-28">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-                  Live market pulse
+                  Delayed market pulse
                 </div>
                 <h2 className="mt-1 font-display text-2xl font-bold">Benchmark indices</h2>
               </div>
@@ -469,7 +474,7 @@ export default function StocksPage() {
         >
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.15em] text-primary">
-              Stock research
+              Company information
             </div>
             <h2 className="mt-1 font-display text-2xl font-bold">Find any listed company</h2>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -676,6 +681,33 @@ export default function StocksPage() {
           </div>
         )}
         {!loading && overview && <StockResearch symbol={symbol} />}
+        <section className="mt-8 rounded-2xl border border-border bg-card p-6">
+          <h2 className="font-display text-xl font-bold">Market-data disclaimer</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            Market information is provided for general educational purposes only and may be delayed,
+            incomplete or subject to revision. It does not constitute investment advice, research, a
+            recommendation, or an invitation to buy or sell securities. Verify information with the
+            relevant exchange, issuer or authorized data provider before making any decision.
+          </p>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Source: FinEdge API · Latest available delayed data · Times are displayed in IST where
+            provided.
+          </p>
+          <nav aria-label="Related resources" className="mt-5 flex flex-wrap gap-4 text-sm">
+            <Link href="/funds" className="font-semibold text-primary underline">
+              Explore mutual funds
+            </Link>
+            <Link href="/calculator" className="font-semibold text-primary underline">
+              Financial calculators
+            </Link>
+            <Link href="/learn" className="font-semibold text-primary underline">
+              Investor education
+            </Link>
+            <Link href="/disclaimer" className="font-semibold text-primary underline">
+              Risk disclaimer
+            </Link>
+          </nav>
+        </section>
       </main>
       <SiteFooter />
     </div>

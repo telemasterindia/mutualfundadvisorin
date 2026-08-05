@@ -15,6 +15,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { MarketTicker } from "@/components/market-ticker";
 import { Button } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
 
@@ -70,6 +71,7 @@ export default function Page() {
     <div className="min-h-screen">
       <SiteHeader />
       <main>
+        <MarketTicker />
         <Hero />
         <TrustStrip />
         <Options />

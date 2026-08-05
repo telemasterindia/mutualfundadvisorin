@@ -255,6 +255,7 @@ async function finedgeFetch<T>(
   const response = await fetch(`${FINEDGE_BASE_URL}${path}?${searchParams.toString()}`, {
     headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0" },
     next: { revalidate },
+    signal: AbortSignal.timeout(8_000),
   });
 
   const responseText = await response.text();

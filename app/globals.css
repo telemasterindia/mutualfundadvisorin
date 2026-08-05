@@ -365,8 +365,14 @@
   backface-visibility: hidden;
   will-change: transform;
 }
-.market-ticker:hover .market-ticker-track {
+.market-ticker:hover .market-ticker-track,
+.market-ticker:focus-within .market-ticker-track {
   animation-play-state: paused;
+}
+@media (max-width: 639px) {
+  .market-ticker-track {
+    animation: none;
+  }
 }
 @media (max-width: 374px) {
   .market-ticker-track {
