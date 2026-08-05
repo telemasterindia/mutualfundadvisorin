@@ -22,7 +22,6 @@ import {
 import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
-import { MarketTicker } from "@/components/market-ticker";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -33,6 +32,9 @@ const nav = [
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
 ];
+
+const isActiveRoute = (path: string, target: string) =>
+  path === target || (target !== "/" && path.startsWith(`${target}/`));
 
 const toolLinks = [
   {
@@ -142,6 +144,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full px-1 pt-1 sm:px-4 sm:pt-4">
+      <a
+        href="#main-content"
+        className="sr-only fixed left-4 top-4 z-[100] rounded-lg bg-background px-4 py-3 font-semibold text-foreground shadow-lg focus:not-sr-only"
+      >
+        Skip to main content
+      </a>
       <div
         style={{ maxWidth: scrolled ? 1100 : 1280 }}
         className={`mx-auto rounded-2xl transition-all duration-500 ${
@@ -164,12 +172,13 @@ export function SiteHeader() {
 
           <nav className="hidden items-center gap-0.5 lg:flex">
             {nav.map((n) => {
-              const active = path === n.to;
+              const active = isActiveRoute(path, n.to);
               return (
                 <Link
                   key={n.to}
                   href={n.to}
                   prefetch={false}
+                  aria-current={active ? "page" : undefined}
                   className="relative rounded-full px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {active && <span className="absolute inset-0 rounded-full bg-secondary" />}
@@ -222,9 +231,12 @@ export function SiteHeader() {
                   key={n.to}
                   href={n.to}
                   prefetch={false}
+                  aria-current={isActiveRoute(path, n.to) ? "page" : undefined}
                   onClick={() => setOpen(false)}
                   className={`rounded-xl px-3 py-2.5 text-sm font-medium ${
-                    path === n.to ? "bg-secondary text-foreground" : "text-muted-foreground"
+                    isActiveRoute(path, n.to)
+                      ? "bg-secondary text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {n.label}
@@ -278,7 +290,6 @@ export function SiteHeader() {
             </div>
           </div>
         )}
-        <MarketTicker />
       </div>
     </header>
   );
@@ -362,6 +373,7 @@ export function SiteFooter() {
               title: "Company",
               links: [
                 ["About", "/about"],
+                ["Amit Chadha", "/about/amit-chadha"],
                 ["Delhi Distributor", "/mutual-fund-distributor-delhi"],
                 ["Contact", "/contact"],
                 ["Book Consultation", "/book-consultation"],
@@ -370,6 +382,7 @@ export function SiteFooter() {
             {
               title: "Legal",
               links: [
+                ["Editorial Policy", "/editorial-policy"],
                 ["Risk Disclaimer", "/disclaimer"],
                 ["Privacy Policy", "/privacy"],
               ],

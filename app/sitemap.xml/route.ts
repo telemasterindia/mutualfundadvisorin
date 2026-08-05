@@ -11,10 +11,11 @@ const pages = [
   { path: "calculator", changeFrequency: "monthly", priority: "0.8" },
   { path: "learn", changeFrequency: "weekly", priority: "0.8" },
   { path: "about", changeFrequency: "monthly", priority: "0.6" },
+  { path: "about/amit-chadha", changeFrequency: "monthly", priority: "0.6" },
   { path: "mutual-fund-distributor-delhi", changeFrequency: "monthly", priority: "0.9" },
   { path: "book-consultation", changeFrequency: "monthly", priority: "0.7" },
   { path: "contact", changeFrequency: "monthly", priority: "0.6" },
-  { path: "get-started", changeFrequency: "monthly", priority: "0.7" },
+  { path: "editorial-policy", changeFrequency: "yearly", priority: "0.4" },
   { path: "disclaimer", changeFrequency: "yearly", priority: "0.4" },
   { path: "privacy", changeFrequency: "yearly", priority: "0.4" },
   ...learningArticles.map((article) => ({

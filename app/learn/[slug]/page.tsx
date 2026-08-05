@@ -27,6 +27,13 @@ export async function generateMetadata({
           description: article.description,
           type: "article",
           url: `/learn/${article.slug}`,
+          images: ["/wealthmaster-india-og.png"],
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: article.title,
+          description: article.description,
+          images: ["/wealthmaster-india-og.png"],
         },
       }
     : {};
@@ -48,7 +55,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         "@type": "Person",
         name: "Amit Chadha",
         jobTitle: "Mutual Fund Distributor",
+        url: "https://www.mutualfundadvisor.in/about/amit-chadha",
       },
+      datePublished: "2026-07-30",
+      dateModified: "2026-08-05",
+      image: "https://www.mutualfundadvisor.in/wealthmaster-india-og.png",
       publisher: {
         "@type": "Organization",
         name: "WealthMaster India",
@@ -112,13 +123,50 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </h1>
           <p className="mt-5 text-lg leading-8 text-muted-foreground">{article.description}</p>
           <p className="mt-5 text-sm text-muted-foreground">
-            Written by <span className="font-semibold text-foreground">Amit Chadha</span>, Founder
-            &amp; Mutual Fund Distributor at WealthMaster India.
+            Written and reviewed by{" "}
+            <Link href="/about/amit-chadha" className="font-semibold text-foreground underline">
+              Amit Chadha
+            </Link>
+            , Founder &amp; Mutual Fund Distributor at WealthMaster India · AMFI ARN: 349461.
+            Published 30 July 2026 · Updated 5 August 2026.
           </p>
           <div className="mt-10 rounded-2xl border border-warning/25 bg-warning/5 p-5 text-sm leading-6 text-muted-foreground">
             This article is for investor education only. It is not investment advice, a scheme
             recommendation or an assurance of returns.
           </div>
+          <section className="mt-12 rounded-2xl border border-border bg-card p-6">
+            <h2 className="font-display text-2xl font-bold">Sources and editorial review</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              This educational article was reviewed against official investor material. Scheme
+              terms, tax rules and regulatory requirements can change; check current documents
+              before acting.
+            </p>
+            <ul className="mt-4 space-y-2 text-sm">
+              <li>
+                <a
+                  className="text-primary underline"
+                  href="https://www.amfiindia.com/investor-corner"
+                  rel="noreferrer"
+                >
+                  AMFI Investor Corner
+                </a>
+              </li>
+              <li>
+                <a
+                  className="text-primary underline"
+                  href="https://investor.sebi.gov.in/"
+                  rel="noreferrer"
+                >
+                  SEBI Investor website
+                </a>
+              </li>
+              <li>
+                <Link className="text-primary underline" href="/editorial-policy">
+                  WealthMaster India editorial policy
+                </Link>
+              </li>
+            </ul>
+          </section>
           <div className="mt-12 space-y-11">
             {article.sections.map((section) => (
               <section key={section.heading}>

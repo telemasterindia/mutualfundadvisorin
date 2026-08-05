@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/get-started",
+        destination: "/book-consultation",
+        permanent: true,
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "mutualfundadvisor.in" }],
         destination: "https://www.mutualfundadvisor.in/:path*",

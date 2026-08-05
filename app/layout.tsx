@@ -16,14 +16,22 @@ export const metadata: Metadata = {
     title: "Mutual Fund Distributor in Delhi | WealthMaster India",
     description:
       "Explore mutual funds, SIP calculators and investor education, or request a consultation with an AMFI-registered Mutual Fund Distributor in Delhi.",
-    images: ["/icon.svg"],
+    url: "/",
+    images: [
+      {
+        url: "/wealthmaster-india-og.png",
+        width: 1200,
+        height: 630,
+        alt: "WealthMaster India — AMFI-Registered Mutual Fund Distributor, ARN 349461, Delhi",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mutual Fund Distributor in Delhi | WealthMaster India",
     description:
       "Explore mutual funds, SIP calculators and investor education, or request a consultation with an AMFI-registered Mutual Fund Distributor in Delhi.",
-    images: ["/icon.svg"],
+    images: ["/wealthmaster-india-og.png"],
   },
 };
 
@@ -75,7 +83,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: structuredDataJson }}
         />
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <div id="main-content">{children}</div>
+        </AppProviders>
         <FloatingContact />
       </body>
     </html>
