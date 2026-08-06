@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         areaServed: { "@type": "AdministrativeArea", name: "Delhi" },
         serviceType: "Mutual Fund Distribution",
         telephone: "+91-9999252122",
-        email: "contact@wealthmasterindia.in",
+        email: "invest@mutualfundadvisor.in",
         address: {
           "@type": "PostalAddress",
           streetAddress: "Q-14, Rajouri Garden",

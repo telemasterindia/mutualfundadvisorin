@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cloneElement, isValidElement, useId, useState } from "react";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
 import { CONTACT, waLink } from "@/lib/contact";
 import { toast } from "sonner";
 
@@ -39,15 +38,20 @@ function Contact() {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.from("leads").insert({
-      full_name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone,
-      message: `[${parsed.data.subject}] ${parsed.data.message}`,
-      source: "contact-form",
+    const response = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        full_name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        message: `[${parsed.data.subject}] ${parsed.data.message}`,
+        source: "contact-form",
+      }),
     });
+    const result = (await response.json()) as { error?: string };
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (!response.ok) return toast.error(result.error || "Unable to send your message.");
     setSent(true);
     toast.success("Message sent. We'll reply within 24 hours.");
   };

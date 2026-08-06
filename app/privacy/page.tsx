@@ -136,11 +136,11 @@ export default function PrivacyPage() {
               enough detail for us to identify and address your request.
             </p>
             <a
-              href="mailto:contact@wealthmasterindia.in?subject=Privacy%20request"
+              href="mailto:invest@mutualfundadvisor.in?subject=Privacy%20request"
               className="mt-5 flex items-center gap-2 break-all text-sm font-semibold text-primary hover:underline"
             >
               <Mail className="h-4 w-4 shrink-0" />
-              contact@wealthmasterindia.in
+              invest@mutualfundadvisor.in
             </a>
             <Link
               href="/contact"

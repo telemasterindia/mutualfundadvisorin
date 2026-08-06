@@ -44,7 +44,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PersonaGuide } from "@/components/persona-guide";
 
@@ -1079,18 +1078,23 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
     }
 
     setBusy(true);
-    const { error } = await supabase.from("leads").insert({
-      full_name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone,
-      source: `calculator-${calculator.toLowerCase().replace(/\s+/g, "-")}`,
-      goal: calculator,
-      message: `${context}${parsed.data.message ? ` Notes: ${parsed.data.message}` : ""}`,
+    const response = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        full_name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        source: `calculator-${calculator.toLowerCase().replace(/\s+/g, "-")}`,
+        goal: calculator,
+        message: `${context}${parsed.data.message ? ` Notes: ${parsed.data.message}` : ""}`,
+      }),
     });
+    const result = (await response.json()) as { error?: string };
     setBusy(false);
 
-    if (error) {
-      toast.error(error.message);
+    if (!response.ok) {
+      toast.error(result.error || "Unable to send your request.");
       return;
     }
 

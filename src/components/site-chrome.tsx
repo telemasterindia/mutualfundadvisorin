@@ -353,10 +353,10 @@ export function SiteFooter() {
                 +91 99992 52122
               </a>
               <a
-                href="mailto:contact@wealthmasterindia.in"
+                href="mailto:invest@mutualfundadvisor.in"
                 className="block transition-colors hover:text-foreground"
               >
-                contact@wealthmasterindia.in
+                invest@mutualfundadvisor.in
               </a>
               <div className="text-xs">Q-14, Rajouri Garden, New Delhi-110027</div>
             </div>

@@ -4,7 +4,7 @@ export const CONTACT = {
   company: "WealthMaster India",
   whatsapp: "919999252122", // E.164 without "+" for wa.me
   whatsappDisplay: "+91 99992 52122",
-  email: "contact@wealthmasterindia.in",
+  email: "invest@mutualfundadvisor.in",
   phone: "+91 99992 52122",
   phoneRaw: "9999252122",
   telHref: "tel:+919999252122",

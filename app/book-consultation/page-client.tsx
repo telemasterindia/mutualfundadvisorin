@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const schema = z.object({
@@ -121,18 +120,23 @@ function BookConsultation() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("consultations").insert({
-      full_name: parsed.data.full_name,
-      email: parsed.data.email,
-      phone: parsed.data.phone,
-      preferred_date: parsed.data.preferred_date,
-      preferred_time: parsed.data.preferred_time,
-      topic: parsed.data.topic || null,
-      mode: parsed.data.mode,
-      message: parsed.data.message || null,
+    const response = await fetch("/api/consultations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        full_name: parsed.data.full_name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        preferred_date: parsed.data.preferred_date,
+        preferred_time: parsed.data.preferred_time,
+        topic: parsed.data.topic || null,
+        mode: parsed.data.mode,
+        message: parsed.data.message || null,
+      }),
     });
+    const result = (await response.json()) as { error?: string };
     setSubmitting(false);
-    if (error) return toast.error(error.message);
+    if (!response.ok) return toast.error(result.error || "Unable to book your consultation.");
     setDone(true);
     toast.success("Consultation requested. You'll receive a confirmation shortly.");
   };
