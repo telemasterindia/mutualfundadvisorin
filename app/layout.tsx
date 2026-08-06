@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description:
     "Connect with WealthMaster India, an AMFI-registered Mutual Fund Distributor in Rajouri Garden, Delhi. Explore SIPs, mutual funds and Regular Plan assistance. ARN 349461.",
   metadataBase: new URL(SITE_URL),
+  verification: {
+    google: "haakLHYbLxK4RfIhjF1TwqzRoFmDdc-Fo_idGyteqM4",
+  },
   openGraph: {
     siteName: "WealthMaster India",
     type: "website",
