@@ -45,6 +45,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { submitLead } from "@/lib/submit-enquiry";
 import { PersonaGuide } from "@/components/persona-guide";
 
 const inr = (n: number) => `Rs. ${Math.round(n).toLocaleString("en-IN")}`;
@@ -1078,28 +1079,22 @@ function ConsultationLeadForm({ calculator, context }: { calculator: string; con
     }
 
     setBusy(true);
-    const response = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await submitLead({
         full_name: parsed.data.name,
         email: parsed.data.email,
         phone: parsed.data.phone,
         source: `calculator-${calculator.toLowerCase().replace(/\s+/g, "-")}`,
         goal: calculator,
         message: `${context}${parsed.data.message ? ` Notes: ${parsed.data.message}` : ""}`,
-      }),
-    });
-    const result = (await response.json()) as { error?: string };
-    setBusy(false);
-
-    if (!response.ok) {
-      toast.error(result.error || "Unable to send your request.");
-      return;
+      });
+      setSent(true);
+      toast.success("Request sent. We'll call you with a custom plan.");
+    } catch {
+      toast.error("Unable to send your request. Please check your connection and try again.");
+    } finally {
+      setBusy(false);
     }
-
-    setSent(true);
-    toast.success("Request sent. We'll call you with a custom plan.");
   };
 
   return (

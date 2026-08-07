@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { submitConsultation } from "@/lib/submit-enquiry";
 
 const schema = z.object({
   full_name: z.string().trim().min(2).max(80),
@@ -120,10 +121,8 @@ function BookConsultation() {
       return;
     }
     setSubmitting(true);
-    const response = await fetch("/api/consultations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await submitConsultation({
         full_name: parsed.data.full_name,
         email: parsed.data.email,
         phone: parsed.data.phone,
@@ -132,13 +131,14 @@ function BookConsultation() {
         topic: parsed.data.topic || null,
         mode: parsed.data.mode,
         message: parsed.data.message || null,
-      }),
-    });
-    const result = (await response.json()) as { error?: string };
-    setSubmitting(false);
-    if (!response.ok) return toast.error(result.error || "Unable to book your consultation.");
-    setDone(true);
-    toast.success("Consultation requested. You'll receive a confirmation shortly.");
+      });
+      setDone(true);
+      toast.success("Consultation requested. You'll receive a confirmation shortly.");
+    } catch {
+      toast.error("Unable to book your consultation. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const modes = [

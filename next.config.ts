@@ -4,11 +4,11 @@ const isDevelopment = process.env.NODE_ENV === "development";
 const isVercel = process.env.VERCEL === "1";
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://widgets.tradingview-widget.com https://s3.tradingview.com${isDevelopment ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://widgets.tradingview-widget.com https://s3.tradingview.com https://www.clarity.ms https://*.clarity.ms${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https: wss://*.tradingview.com",
+  "connect-src 'self' https: https://*.clarity.ms https://c.bing.com wss://*.tradingview.com",
   "frame-src 'self' https://s.tradingview.com https://www.tradingview.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

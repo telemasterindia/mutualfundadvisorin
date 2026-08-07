@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { searchFundsWithLatestNav } from "@/lib/mfapi";
+import { fetchFreshAmfiFunds } from "@/lib/amfi";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,13 +10,30 @@ export async function GET(request: Request) {
   }
 
   try {
-    const funds = await searchFundsWithLatestNav(query, 9);
+    const normalizedQuery = query.trim().toLowerCase();
+    const funds = (await fetchFreshAmfiFunds(7))
+      .filter((fund) =>
+        [fund.schemeName, fund.fundHouse, fund.category, fund.schemeCode]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+      .slice(0, 9)
+      .map((fund) => ({
+        schemeCode: Number(fund.schemeCode),
+        schemeName: fund.schemeName,
+        nav: fund.navText,
+        navDate: fund.date,
+        fundHouse: fund.fundHouse,
+        category: fund.category,
+      }));
 
     return NextResponse.json(
       { funds },
       {
         headers: {
-          "Cache-Control": "s-maxage=3600, stale-while-revalidate=86400",
+          "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
         },
       },
     );

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getSupabaseServerEnv } from "@/integrations/supabase/env";
+import { sendLeadNotification } from "@/lib/lead-notification";
 
 const consultationSchema = z.object({
   full_name: z.string().trim().min(2).max(80),
@@ -38,7 +39,22 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ ok: true });
+    const notificationSent = await sendLeadNotification(
+      `New consultation booking: ${parsed.data.full_name}`,
+      [
+        ["Name", parsed.data.full_name],
+        ["Email", parsed.data.email],
+        ["Phone", parsed.data.phone],
+        ["Preferred date", parsed.data.preferred_date],
+        ["Preferred time", parsed.data.preferred_time],
+        ["Topic", parsed.data.topic],
+        ["Mode", parsed.data.mode],
+        ["Message", parsed.data.message],
+      ],
+      parsed.data.email,
+    );
+
+    return NextResponse.json({ ok: true, notificationSent });
   } catch (error) {
     console.error("Consultation submission failed:", error);
     return NextResponse.json(

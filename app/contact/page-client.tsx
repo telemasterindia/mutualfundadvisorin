@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cloneElement, isValidElement, useId, useState } from "react";
 import { z } from "zod";
 import { CONTACT, waLink } from "@/lib/contact";
+import { submitLead } from "@/lib/submit-enquiry";
 import { toast } from "sonner";
 
 const schema = z.object({
@@ -38,22 +39,21 @@ function Contact() {
       return;
     }
     setBusy(true);
-    const response = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    try {
+      await submitLead({
         full_name: parsed.data.name,
         email: parsed.data.email,
         phone: parsed.data.phone,
         message: `[${parsed.data.subject}] ${parsed.data.message}`,
         source: "contact-form",
-      }),
-    });
-    const result = (await response.json()) as { error?: string };
-    setBusy(false);
-    if (!response.ok) return toast.error(result.error || "Unable to send your message.");
-    setSent(true);
-    toast.success("Message sent. We'll reply within 24 hours.");
+      });
+      setSent(true);
+      toast.success("Message sent. We'll reply within 24 hours.");
+    } catch {
+      toast.error("Unable to send your message. Please check your connection and try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -111,7 +111,6 @@ function Contact() {
                   onChange={(e) =>
                     setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })
                   }
-                  placeholder="99992 52122"
                   inputMode="numeric"
                 />
               </Field>
